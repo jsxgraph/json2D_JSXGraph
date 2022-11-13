@@ -7,11 +7,17 @@ function drawGraphics2d(id, json) {
     console.log(json);
     // TODO: additional parameters for initialisation
     // initialize the jsx board
-    var board = JXG.JSXGraph.initBoard(id, { boundingbox: [-8, 8, 8, -8], axis: true, showClearTraces: true });
+    var board = JXG.JSXGraph.initBoard(id, {
+        boundingbox: [-8, 8, 8, -8],
+        axis: true,
+        showClearTraces: true,
+    });
     // draw every element in the json
+    board.suspendUpdate();
     for (element of json.elements) {
         drawGraphic(board, element);
     }
+    board.unsuspendUpdate();
 }
 
 function drawGraphic(board, json) {
@@ -33,7 +39,7 @@ function drawGraphic(board, json) {
             drawCircle(board, json, 0);
             break;
         default:
-            console.log("Type not recognized");
+            console.log("Type " + json.type + " not recognized");
     }
 }
 
@@ -81,18 +87,18 @@ function drawLine(board, json) {
 function calculateFoci(radiusX, radiusY, coords) {
     var eccentricity;
     if (radiusX > radiusY) {
-        eccentricity = JXG.Math.nthroot(1 - radiusY / radiusX,2);
+        eccentricity = JXG.Math.nthroot(1 - radiusY / radiusX, 2);
         return [
             [eccentricity * radiusX + coords[0], coords[1]],
             [-eccentricity * radiusX + coords[0], coords[1]],
-            radiusX*2,
+            radiusX * 2,
         ];
     } else {
-        eccentricity = JXG.Math.nthroot(1 - radiusX / radiusY,2);
+        eccentricity = JXG.Math.nthroot(1 - radiusX / radiusY, 2);
         return [
             [coords[0], eccentricity * radiusY + coords[1]],
             [coords[0], -eccentricity * radiusY + coords[1]],
-            radiusY*2,
+            radiusY * 2,
         ];
     }
 }
@@ -133,6 +139,29 @@ function testRun() {
                 coords: [[[0, 0]], [[1, 1]], [[2, 2]], [[3, 3]]],
                 opacity: 0.5,
                 pointSize: 3,
+            },
+            {
+                type: "rectangle",
+                color: [1.0, 0.5, 0.0],
+                opacity: 1.0,
+                coords: [[[0.0, 0.0]], [[1.0, 1.0]]],
+            },
+            {
+                type: "arrow",
+                color: [1.0, 0.5, 0.0],
+                opacity: 1.0,
+                coords: [[[0.0, 0.0]], [[1.0, 1.0]]],
+            },
+            {
+                type: "polygon",
+                color: [1.0, 0.5, 0.0],
+                opacity: 1.0,
+                coords: [
+                    [[0.0, 0.0]],
+                    [[0.0, 1.0]],
+                    [[1.0, 1.0]],
+                    [[1.0, 0.0]],
+                ],
             },
         ],
     });
