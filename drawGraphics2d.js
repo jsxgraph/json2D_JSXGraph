@@ -2,6 +2,8 @@
 //TODO: no scaled coords yet
 //TODO: color as array? -> color converter
 //TODO: size scaling, dynamic coords problematic
+//TODO: optionen achsen, bounding
+//TODO: dynamic interactions
 
 function drawGraphics2d(id, json) {
     console.log(json);
