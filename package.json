@@ -1,0 +1,37 @@
+{
+  "name": "json2D_JSXGraph",
+  "description": "Interface of rendering JSON2D objects with JSXGraph",
+  "homepage": "https://github.com/jsxgraph/json2D_JSXGraph",
+  "version": "0.8",
+  "main": "drawGraphics2d.js",
+  "maintainers": [
+    {
+      "name": "Alfred Wassermann",
+      "email": "Alfred.Wassermann@uni-bayreuth.de"
+    },
+    {
+      "name": "Felix Möhrlein",
+      "email": "Haspeldor@gmail.com"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "json",
+    "graphics",
+    "jsxgraph"
+  ],
+  "bugs": {
+    "url": "https://github.com/jsxgraph/json2D_JSXGraph/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jsxgraph/json2D_JSXGraph.git"
+  },
+  "dependencies": {
+    "jsxgraph": ">=1.0.0"
+  },
+  "engines": {
+    "node": ">=0.6.0"
+  }
+}
+
