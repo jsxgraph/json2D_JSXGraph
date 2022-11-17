@@ -1,19 +1,22 @@
 //TODO: error handling?
 //TODO: no scaled coords yet
-//TODO: color as array? -> color converter
 //TODO: size scaling board.canvasWidth
 //TODO: dynamic coords problematic
-//TODO: optionen achsen, bounding
 //TODO: dynamic interactions
-//TODO: kurve anstatt linie
+//TODO: curve instead of linie
 
 function drawGraphics2d(id, json) {
-    console.log(json);
-    // TODO: additional parameters for initialisation
+    var boundingBox = json.extent;
     // initialize the jsx board
     var board = JXG.JSXGraph.initBoard(id, {
-        boundingbox: [-8, 8, 8, -8],
+        boundingbox: [
+            boundingBox.xmin,
+            boundingBox.ymax,
+            boundingBox.xmax,
+            boundingBox.ymin,
+        ],
         axis: true,
+        keepaspectratio: true,
         showClearTraces: true,
     });
     // draw every element in the json
@@ -86,15 +89,11 @@ function drawLine(board, json, args) {
     for (index = 1; index < args.coords.length; index++) {
         //TODO: line between dynamic points instead of fixed coords?
         //TODO: additional directives: width, dashed, gap
-        board.create(
-            "line",
-            [args.coords[index], args.coords[index - 1]],
-            {
-                straightFirst: false,
-                straightLast: false,
-                strokeColor: args.color,
-            }
-        );
+        board.create("line", [args.coords[index], args.coords[index - 1]], {
+            straightFirst: false,
+            straightLast: false,
+            strokeColor: args.color,
+        });
     }
 }
 
@@ -105,23 +104,25 @@ function drawPolygon(board, json, args) {
         fillColor: args.color,
         strokeOpacity: json.opacity,
         fillOpacity: json.opacity,
-        fixed: true
+        fixed: true,
     });
 }
 
 function drawRectangle(board, json, args) {
     //TODO: polygon cant be fixed, so the points can be moved freely?
-    var start,end;
-    if(args.coords.length == 1){
+    var start, end;
+    if (args.coords.length == 1) {
         start = args.coords[0];
-        args.coords = [start, [start[0]+1,start[1]], [start[0]+1,start[1]+1], [start[0],start[1]+1]];
-
-    }
-    else if(args.coords.length == 2){
+        args.coords = [
+            start,
+            [start[0] + 1, start[1]],
+            [start[0] + 1, start[1] + 1],
+            [start[0], start[1] + 1],
+        ];
+    } else if (args.coords.length == 2) {
         start = args.coords[0];
         end = args.coords[1];
-        args.coords = [start, [start[0],end[1]], end, [end[0],start[1]]];
-
+        args.coords = [start, [start[0], end[1]], end, [end[0], start[1]]];
     }
     drawPolygon(board, json, args);
 }
@@ -145,24 +146,23 @@ function calculateFoci(radiusX, radiusY, coords) {
     }
 }
 
-function convertColor(rgb){
+function convertColor(rgb) {
     var color = [];
     if (rgb != null) {
-        color[0] = Number((rgb[0]*255).toFixed(0));
-        color[1] = Number((rgb[1]*255).toFixed(0));
-        color[2] = Number((rgb[2]*255).toFixed(0));
+        color[0] = Number((rgb[0] * 255).toFixed(0));
+        color[1] = Number((rgb[1] * 255).toFixed(0));
+        color[2] = Number((rgb[2] * 255).toFixed(0));
         color = JXG.rgb2hex(color);
     }
     return color;
 }
 
-function convertCoords(coords){
+function convertCoords(coords) {
     var newCoords = [];
-    for(key in coords){
+    for (key in coords) {
         newCoords[key] = coords[key][0];
     }
     return newCoords;
-
 }
 
 function testRun() {
@@ -226,5 +226,6 @@ function testRun() {
                 ],
             },
         ],
+        extent: { xmin: -6.0, xmax: 9.0, ymin: -4.0, ymax: 7.0 },
     });
 }
