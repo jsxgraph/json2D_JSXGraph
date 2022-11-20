@@ -1,21 +1,21 @@
 //TODO: error handling?
 //TODO: no scaled coords yet -> point size?
 //TODO: some objects draggable
+//TODO: axes options
 
 function drawGraphics2d(id, json) {
-    var boundingBox = json.extent;
-    // initialize the jsx board
-    var board = JXG.JSXGraph.initBoard(id, {
-        boundingbox: [
-            boundingBox.xmin,
-            boundingBox.ymax,
-            boundingBox.xmax,
-            boundingBox.ymin,
-        ],
-        axis: true,
-        keepaspectratio: true,
-        showClearTraces: true,
-    });
+    var boundingBox = json.extent,
+        board = JXG.JSXGraph.initBoard(id, {
+            boundingbox: [
+                boundingBox.xmin,
+                boundingBox.ymax,
+                boundingBox.xmax,
+                boundingBox.ymin,
+            ],
+            axis: json.axes.hasaxes,
+            keepaspectratio: true,
+            showClearTraces: true,
+        });
     // draw every element in the json
     board.suspendUpdate();
     for (element of json.elements) {
@@ -69,7 +69,7 @@ function drawPoint(board, json, args) {
             fillColor: args.color,
             strokeOpacity: json.opacity,
             fillOpacity: json.opacity,
-            size: board.canvasWidth * json.pointSize / 2,
+            size: (board.canvasWidth * json.pointSize) / 2,
         });
     }
 }
@@ -116,22 +116,44 @@ function drawPolygon(board, json, args) {
         strokeOpacity: json.opacity,
         fillOpacity: json.opacity,
         fixed: true,
-        vertices: {visible:false}
+        vertices: { visible: false },
     });
 }
 
 function drawRectangle(board, json, args) {
     var start, end, p1, p2, p3, p4;
     start = args.coords[0];
-    if (args.coords.length == 1) end = [start[0]+1, start[1]+1]
-    else if (args.coords.length == 2) end = args.coords[1]; 
+    if (args.coords.length == 1) end = [start[0] + 1, start[1] + 1];
+    else if (args.coords.length == 2) end = args.coords[1];
 
-    p1 = board.create('point', [start[0], start[1]], {visible:false});
-    p2 = board.create('point', [end[0], end[1]], {visible:false});
-    p3 = board.create('point', [function(){return p1.X()},function(){return p2.Y()}], {visible:false});
-    p4 = board.create('point', [function(){return p2.X()},function(){return p1.Y()}], {visible:false});
+    p1 = board.create("point", [start[0], start[1]], { visible: false });
+    p2 = board.create("point", [end[0], end[1]], { visible: false });
+    p3 = board.create(
+        "point",
+        [
+            function () {
+                return p1.X();
+            },
+            function () {
+                return p2.Y();
+            },
+        ],
+        { visible: false }
+    );
+    p4 = board.create(
+        "point",
+        [
+            function () {
+                return p2.X();
+            },
+            function () {
+                return p1.Y();
+            },
+        ],
+        { visible: false }
+    );
 
-    board.create("polygon", [p1,p3,p2,p4], {
+    board.create("polygon", [p1, p3, p2, p4], {
         strokeColor: args.color,
         fillColor: args.color,
         strokeOpacity: json.opacity,
@@ -185,7 +207,7 @@ function convertCoordsCurve(coords) {
         x[key] = coords[key][0];
         y[key] = coords[key][1];
     }
-    return [x,y];
+    return [x, y];
 }
 
 function testRun() {
@@ -250,5 +272,6 @@ function testRun() {
             },
         ],
         extent: { xmin: -6.0, xmax: 9.0, ymin: -4.0, ymax: 7.0 },
+        axes: { hasaxes: true },
     });
 }
