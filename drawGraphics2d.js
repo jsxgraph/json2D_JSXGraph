@@ -1,7 +1,9 @@
 //TODO: error handling?
 //TODO: no scaled coords yet -> point size?
 //TODO: some objects draggable
-//TODO: axes options
+//TODO: axes options?
+    //TODO: 
+//TODO: text primitive
 
 function drawGraphics2d(id, json) {
     var boundingBox = json.extent,
