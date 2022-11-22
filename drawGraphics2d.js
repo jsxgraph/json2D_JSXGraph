@@ -2,7 +2,10 @@
 //TODO: no scaled coords yet -> point size?
 //TODO: some objects draggable
 //TODO: axes options?
-    //TODO: 
+    //TODO: scaled axes
+    //TODO: custom ticks
+    //TODO: custom coordinates
+    //TODO: grid
 //TODO: text primitive
 
 function drawGraphics2d(id, json) {
@@ -71,6 +74,7 @@ function drawPoint(board, json, args) {
             fillColor: args.color,
             strokeOpacity: json.opacity,
             fillOpacity: json.opacity,
+            fixed: true,
             size: (board.canvasWidth * json.pointSize) / 2,
         });
     }
@@ -113,12 +117,11 @@ function drawLine(board, json, args) {
 
 function drawPolygon(board, json, args) {
     board.create("polygon", args.coords, {
-        strokeColor: args.color,
         fillColor: args.color,
         strokeOpacity: json.opacity,
         fillOpacity: json.opacity,
-        fixed: true,
-        vertices: { visible: false },
+        borders: {strokeColor: args.color},
+        vertices: { fixed: true, visible: false, },
     });
 }
 
