@@ -2,7 +2,7 @@
   "name": "json2d_jsxgraph",
   "description": "Interface of rendering JSON2D objects with JSXGraph",
   "homepage": "https://github.com/jsxgraph/json2D_JSXGraph",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "main": "drawGraphics2d.js",
   "maintainers": [
     {
