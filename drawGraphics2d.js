@@ -5,7 +5,6 @@
     //TODO: custom ticks
     //TODO: custom coordinates
     //TODO: grid
-//TODO: text primitive
 
 function drawGraphics2d(id, json) {
     var boundingBox = json.extent,
@@ -61,6 +60,9 @@ function drawGraphic(board, json) {
         case "polygon":
             drawPolygon(board, json, args);
             break;
+        case "text":
+            drawText(board, json, args);
+            break;
         default:
             console.log("Type " + json.type + " not recognized");
     }
@@ -84,12 +86,16 @@ function drawCircle(board, json, args) {
     for (coord of args.coords) {
         // calculate the foci of the ellipse
         var foci = calculateFoci(json.radius1, json.radius2, coord);
-        board.create("ellipse", [foci[0], foci[1], foci[2], json.angle1, json.angle2], {
-            strokeColor: args.color,
-            fillColor: args.color,
-            strokeOpacity: json.opacity,
-            fillOpacity: json.opacity * args.filled,
-        });
+        board.create(
+            "ellipse",
+            [foci[0], foci[1], foci[2], json.angle1, json.angle2],
+            {
+                strokeColor: args.color,
+                fillColor: args.color,
+                strokeOpacity: json.opacity,
+                fillOpacity: json.opacity * args.filled,
+            }
+        );
     }
 }
 
@@ -119,9 +125,23 @@ function drawPolygon(board, json, args) {
         fillColor: args.color,
         strokeOpacity: json.opacity,
         fillOpacity: json.opacity,
-        borders: {strokeColor: args.color},
-        vertices: { fixed: true, visible: false, },
+        borders: { strokeColor: args.color },
+        vertices: { fixed: true, visible: false },
     });
+}
+
+function drawText(board, json, args) {
+    for (index in args.coords) {
+        board.create(
+            "text",
+            [args.coords[index][0], args.coords[index][1], json.texts[index]],
+            {
+                color: args.color,
+                fixed: true,
+                fontSize: json.textSize,
+            }
+        );
+    }
 }
 
 function drawRectangle(board, json, args) {
@@ -168,20 +188,20 @@ function drawRectangle(board, json, args) {
 
 function calculateFoci(radiusX, radiusY, coords) {
     var eccentricity, diff;
-    diff = Math.abs(radiusX*radiusX - radiusY*radiusY);
+    diff = Math.abs(radiusX * radiusX - radiusY * radiusY);
     eccentricity = Math.sqrt(diff);
     if (radiusX > radiusY) {
         return [
             [eccentricity + coords[0], coords[1]],
             [-eccentricity + coords[0], coords[1]],
-            [coords[0], radiusY + coords[1]]
+            [coords[0], radiusY + coords[1]],
         ];
     } else {
-        diff = radiusY^2 - radiusX^2;
+        diff = radiusY ^ (2 - radiusX) ^ 2;
         return [
             [coords[0], eccentricity + coords[1]],
             [coords[0], -eccentricity + coords[1]],
-            [coords[0], radiusY + coords[1]]
+            [coords[0], radiusY + coords[1]],
         ];
     }
 }
@@ -284,6 +304,16 @@ function testRun() {
                     [[-4.0, -4.0]],
                     [[-1.0, 0.0]],
                 ],
+            },
+            {
+                type: "text",
+                color: [0.5, 0.4, 0.1],
+                textSize: 40,
+                coords: [
+                    [[-5,-5]],
+                    [[5,5]],
+                ],
+                texts: ["Bottom left", "Top right"],
             },
         ],
         extent: { xmin: -6.0, xmax: 9.0, ymin: -4.0, ymax: 7.0 },
