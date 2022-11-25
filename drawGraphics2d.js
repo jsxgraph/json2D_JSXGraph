@@ -1,6 +1,5 @@
 //TODO: error handling?
 //TODO: no scaled coords yet -> point size?
-//TODO: some objects draggable
 //TODO: axes options?
     //TODO: scaled axes
     //TODO: custom ticks
@@ -75,6 +74,7 @@ function drawPoint(board, json, args) {
             strokeOpacity: json.opacity,
             fillOpacity: json.opacity,
             fixed: true,
+            name: "",
             size: (board.canvasWidth * json.pointSize) / 2,
         });
     }
@@ -84,7 +84,7 @@ function drawCircle(board, json, args) {
     for (coord of args.coords) {
         // calculate the foci of the ellipse
         var foci = calculateFoci(json.radius1, json.radius2, coord);
-        board.create("ellipse", [foci[0], foci[1], foci[2]], {
+        board.create("ellipse", [foci[0], foci[1], foci[2], json.angle1, json.angle2], {
             strokeColor: args.color,
             fillColor: args.color,
             strokeOpacity: json.opacity,
@@ -104,7 +104,6 @@ function drawLineSegmented(board, json, args) {
 }
 
 function drawLine(board, json, args) {
-    //TODO: line between dynamic points instead of fixed coords?
     //TODO: additional directives: width, dashed, gap
     var newCoords = convertCoordsCurve(args.coords);
 
@@ -168,20 +167,21 @@ function drawRectangle(board, json, args) {
 }
 
 function calculateFoci(radiusX, radiusY, coords) {
-    var eccentricity;
+    var eccentricity, diff;
+    diff = Math.abs(radiusX*radiusX - radiusY*radiusY);
+    eccentricity = Math.sqrt(diff);
     if (radiusX > radiusY) {
-        eccentricity = JXG.Math.nthroot(1 - radiusY / radiusX, 2);
         return [
-            [eccentricity * radiusX + coords[0], coords[1]],
-            [-eccentricity * radiusX + coords[0], coords[1]],
-            radiusX * 2,
+            [eccentricity + coords[0], coords[1]],
+            [-eccentricity + coords[0], coords[1]],
+            [coords[0], radiusY + coords[1]]
         ];
     } else {
-        eccentricity = JXG.Math.nthroot(1 - radiusX / radiusY, 2);
+        diff = radiusY^2 - radiusX^2;
         return [
-            [coords[0], eccentricity * radiusY + coords[1]],
-            [coords[0], -eccentricity * radiusY + coords[1]],
-            radiusY * 2,
+            [coords[0], eccentricity + coords[1]],
+            [coords[0], -eccentricity + coords[1]],
+            [coords[0], radiusY + coords[1]]
         ];
     }
 }
@@ -230,9 +230,19 @@ function testRun() {
                 type: "circle",
                 color: [0.2, 0.9, 0.0],
                 opacity: 0.9,
-                radius1: 1.0,
-                radius2: 4.0,
-                coords: [[[3.0, 4.0]]],
+                radius1: 4.0,
+                radius2: 2.0,
+                coords: [[[0.0, 5.0]]],
+            },
+            {
+                type: "circle",
+                color: [0.0, 0.0, 1.0],
+                opacity: 1.0,
+                radius1: 4.0,
+                radius2: 2.0,
+                angle1: 0.523598775598298,
+                angle2: 2.35619449019234,
+                coords: [[[0.0, 5.0]]],
             },
             {
                 type: "line",
