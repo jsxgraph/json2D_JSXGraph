@@ -1,10 +1,11 @@
 //TODO: error handling?
 //TODO: no scaled coords yet -> point size?
 //TODO: axes options?
-    //TODO: scaled axes
-    //TODO: custom ticks
-    //TODO: custom coordinates
-    //TODO: grid
+//TODO: scaled axes
+//TODO: custom ticks
+//TODO: custom coordinates
+//TODO: hide grid
+//TODO: text opacity
 
 function drawGraphics2d(id, json) {
     var boundingBox = json.extent,
@@ -16,7 +17,7 @@ function drawGraphics2d(id, json) {
                 boundingBox.ymin,
             ],
             axis: json.axes.hasaxes,
-            keepaspectratio: true,
+            keepaspectratio: false,
             showClearTraces: true,
         });
     // draw every element in the json
@@ -309,14 +310,11 @@ function testRun() {
                 type: "text",
                 color: [0.5, 0.4, 0.1],
                 textSize: 40,
-                coords: [
-                    [[-5,-5]],
-                    [[5,5]],
-                ],
+                coords: [[[-5, -5]], [[5, 5]]],
                 texts: ["Bottom left", "Top right"],
             },
         ],
-        extent: { xmin: -6.0, xmax: 9.0, ymin: -4.0, ymax: 7.0 },
+        extent: { xmin: -6.0, xmax: 9.0, ymin: -6.0, ymax: 9.0 },
         axes: { hasaxes: true },
     });
 }
