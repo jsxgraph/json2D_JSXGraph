@@ -8,7 +8,8 @@
 //TODO: text opacity
 
 function drawGraphics2d(id, json) {
-    var boundingBox = json.extent,
+    var opts = {},
+    boundingBox = json.extent,
         board = JXG.JSXGraph.initBoard(id, {
             boundingbox: [
                 boundingBox.xmin,
@@ -23,84 +24,138 @@ function drawGraphics2d(id, json) {
     // draw every element in the json
     board.suspendUpdate();
     for (element of json.elements) {
-        drawGraphic(board, element);
+        drawGraphic(board, element,opts);
     }
     board.unsuspendUpdate();
 }
 
-function drawGraphic(board, json) {
-    args = {};
-    // change the color format for jxg graph
-    args.color = convertColor(json.color);
-    // calculate given coordinates
-    args.coords = convertCoords(json.coords);
+function drawGraphic(board, json, opts) {
+    var args;
 
     switch (json.type) {
         case "point":
-            drawPoint(board, json, args);
+            args = getArgs(["coords", "color", "opacity", "pointSize"], json, opts, json.type);
+            drawPoint(board, args);
             break;
         case "arrow":
-            args.arrow = true;
-            drawLine(board, json, args);
-            break;
         case "line":
-            args.arrow = false;
-            drawLine(board, json, args);
+            args = getArgs(["coords", "color", "opacity", "arrow"], json, opts, json.type);
+            drawLine(board, args);
             break;
         case "disk":
-            args.filled = true;
-            drawCircle(board, json, args);
-            break;
         case "circle":
-            args.filled = false;
-            drawCircle(board, json, args);
+            args = getArgs(["coords", "color", "opacity", "radius1", "radius2", "angle1", "angle2", "filled"], json, opts, json.type);
+            drawCircle(board, args);
             break;
         case "rectangle":
-            drawRectangle(board, json, args);
+            args = getArgs(["coords", "color", "opacity"], json, opts, json.type);
+            drawRectangle(board, args);
             break;
         case "polygon":
-            drawPolygon(board, json, args);
+            args = getArgs(["coords", "color", "opacity"], json, opts, json.type);
+            drawPolygon(board, args);
             break;
         case "text":
-            drawText(board, json, args);
+            args = getArgs(["coords", "color", "opacity", "texts", "textSize"], json, opts, json.type);
+            drawText(board, args);
+            break;
+        case undefined: 
+            setOption(json, opts);
             break;
         default:
             console.log("Type " + json.type + " not recognized");
     }
 }
 
-function drawPoint(board, json, args) {
+function setOption(json, opts){
+    //TODO: error handling
+    opts[json.option] = validateAttr(json.option, json.value, undefined);
+}
+
+function getAttr(attr, json, opts, type){
+    var value;
+    if(json[attr] != undefined) value = validateAttr(attr, json[attr], type);
+    else if (opts[attr] != undefined) value = opts[attr];
+    else value = validateAttr(attr, undefined, type);
+
+    return value;
+}
+
+function validateAttr(attr, value, type){
+    //TODO: error handling
+    switch(attr){
+        case "color":
+            if(value == undefined) value = [0.0,0.0,0.0];
+            else value = convertColor(value);
+            break;
+        case "coords":
+            value = convertCoords(value);
+            break;
+        case "opacity":
+            if(value == undefined) value = 1.0;
+            break;
+        case "pointSize":
+            if(value == undefined) value = 0.005;
+            break;
+        case "textSize":
+            if(value == undefined) value = 20;
+            break;
+        case "radius1":
+        case "radius2":
+            if(value == undefined) value = 1;
+            break;
+        case "arrow":
+            value = (type == "arrow");
+            break;
+        case "filled":
+            value = (type == "disk");
+            break;
+        default:
+    }
+    return value;
+}
+
+function getArgs(lst, json, opts, type){
+    var args = {};
+    for(attr of lst){
+        args[attr] = getAttr(attr, json, opts, type)
+    } 
+    return args;
+}
+
+
+function drawPoint(board, args) {
     for (coord of args.coords) {
         board.create("point", coord, {
             strokeColor: args.color,
             fillColor: args.color,
-            strokeOpacity: json.opacity,
-            fillOpacity: json.opacity,
+            strokeOpacity: args.opacity,
+            fillOpacity: args.opacity,
             fixed: true,
             name: "",
-            size: (board.canvasWidth * json.pointSize) / 2,
+            size: (board.canvasWidth * args.pointSize) / 2,
         });
     }
 }
 
-function drawCircle(board, json, args) {
+function drawCircle(board, args) {
     for (coord of args.coords) {
         // calculate the foci of the ellipse
-        var foci = calculateFoci(json.radius1, json.radius2, coord);
+        var foci = calculateFoci(args.radius1, args.radius2, coord);
         board.create(
             "ellipse",
-            [foci[0], foci[1], foci[2], json.angle1, json.angle2],
+            [foci[0], foci[1], foci[2], args.angle1, args.angle2],
             {
                 strokeColor: args.color,
                 fillColor: args.color,
-                strokeOpacity: json.opacity,
-                fillOpacity: json.opacity * args.filled,
+                strokeOpacity: args.opacity,
+                fillOpacity: args.opacity * args.filled,
             }
         );
     }
 }
 
-function drawLineSegmented(board, json, args) {
+function drawLineSegmented(board, args) {
     for (index = 1; index < args.coords.length; index++) {
         board.create("line", [args.coords[index], args.coords[index - 1]], {
             straightFirst: false,
@@ -110,42 +165,42 @@ function drawLineSegmented(board, json, args) {
     }
 }
 
-function drawLine(board, json, args) {
+function drawLine(board, args) {
     //TODO: additional directives: width, dashed, gap
     var newCoords = convertCoordsCurve(args.coords);
 
     board.create("curve", newCoords, {
         lastArrow: args.arrow,
         strokeColor: args.color,
-        strokeOpacity: json.opacity,
+        strokeOpacity: args.opacity,
     });
 }
 
-function drawPolygon(board, json, args) {
+function drawPolygon(board, args) {
     board.create("polygon", args.coords, {
         fillColor: args.color,
-        strokeOpacity: json.opacity,
-        fillOpacity: json.opacity,
+        strokeOpacity: args.opacity,
+        fillOpacity: args.opacity,
         borders: { strokeColor: args.color },
         vertices: { fixed: true, visible: false },
     });
 }
 
-function drawText(board, json, args) {
+function drawText(board, args) {
     for (index in args.coords) {
         board.create(
             "text",
-            [args.coords[index][0], args.coords[index][1], json.texts[index]],
+            [args.coords[index][0], args.coords[index][1], args.texts[index]],
             {
                 color: args.color,
                 fixed: true,
-                fontSize: json.textSize,
+                fontSize: args.textSize,
             }
         );
     }
 }
 
-function drawRectangle(board, json, args) {
+function drawRectangle(board, args) {
     var start, end, p1, p2, p3, p4;
     start = args.coords[0];
     if (args.coords.length == 1) end = [start[0] + 1, start[1] + 1];
@@ -181,8 +236,8 @@ function drawRectangle(board, json, args) {
     board.create("polygon", [p1, p3, p2, p4], {
         strokeColor: args.color,
         fillColor: args.color,
-        strokeOpacity: json.opacity,
-        fillOpacity: json.opacity,
+        strokeOpacity: args.opacity,
+        fillOpacity: args.opacity,
         fixed: true,
     });
 }
@@ -282,6 +337,13 @@ function testRun() {
                 coords: [[[0, 0]], [[1, 1]], [[2, 2]], [[3, 3]]],
                 opacity: 0.5,
                 pointSize: 0.005,
+            },
+            {option: "pointSize", value: 0.01},
+            {option: "color", value: [1,0,1]},
+            {
+                type: "point",
+                coords: [[[-1, -1]], [[-2, -2]], [[-3, -3]]],
+                opacity: 0.5,
             },
             {
                 type: "rectangle",
