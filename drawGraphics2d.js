@@ -4,8 +4,10 @@
 //TODO: scaled axes
 //TODO: custom ticks
 //TODO: custom coordinates
+
 //TODO: hide grid
 //TODO: text opacity
+//TODO: ratio of bounding box
 
 function drawGraphics2d(id, json) {
     var opts = {},
@@ -18,6 +20,7 @@ function drawGraphics2d(id, json) {
                 boundingBox.ymin,
             ],
             axis: json.axes.hasaxes,
+            grid: false,
             keepaspectratio: false,
             showClearTraces: true,
         });
