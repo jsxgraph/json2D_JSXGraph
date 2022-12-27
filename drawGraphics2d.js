@@ -1,5 +1,3 @@
-//TODO: no scaled coords yet
-
 //TODO: axes options
 //TODO: logarithmic scale and display function
 //TODO: hide grid?
@@ -43,6 +41,7 @@ function drawGraphics2d(id, json) {
             axis: false,
             keepaspectratio: false,
             showClearTraces: true,
+            showCopyRight: false,
         }),
         opts = { graphicsComplex: false, boundingBox: boundingBox };
     // draw every element in the json
@@ -134,6 +133,7 @@ function drawAxes(board, json) {
     attr = JXG.Options.board.defaultAxes.y.ticks;
     attr.drawLabels = true;
     attr.drawZero = false;
+    attr.fixed = true;
     attr.generateLabelText = function (tick, zero) {
         return Math.pow(10, Math.round(tick.usrCoords[2] - zero.usrCoords[2])).toString();
     };
@@ -351,7 +351,7 @@ function convertCoords(coords, opts) {
         key;
 
     for (index in coords) {
-        key = opts.graphicsComplex ? coords[index] : index;
+        key = opts.graphicsComplex ? coords[index] - 1 : index;
         if (target[key][0] != null) newCoords[index] = target[key][0];
         else {
             x = opts.boundingBox.xmin + target[key][1][0] * (opts.boundingBox.xmax - opts.boundingBox.xmin);
@@ -373,6 +373,7 @@ function convertCoordsCurve(coords) {
 }
 
 function testRun() {
+    /*
     drawGraphics2d("graphics2d", {
         elements: [
             {
@@ -406,7 +407,7 @@ function testRun() {
                 data: [
                     {
                         type: "polygon",
-                        coords: [0, 1, 2, 3],
+                        coords: [1, 2, 3, 4],
                     },
                 ],
             },
@@ -424,6 +425,7 @@ function testRun() {
             symbol: "automatic",
         },
     });
+    */
 
     /**
         elements: [
@@ -451,6 +453,7 @@ function testRun() {
         axes: { hasaxes: false },
         aspectRatio: { symbol: "automatic" },
     });
+    */
     drawGraphics2d("graphics2d", {
         elements: [
             {
@@ -541,5 +544,4 @@ function testRun() {
         extent: { xmin: -6.0, xmax: 9.0, ymin: -6.0, ymax: 9.0 },
         axes: { hasaxes: true },
     });
-    **/
 }
