@@ -1,17 +1,49 @@
-//TODO: error handling?
-//TODO: no scaled coords yet -> point size?
+//TODO: no scaled coords yet
+
 //TODO: axes options?
 //TODO: scaled axes
+//TODO: logarithmic scale -> very important, see example
 //TODO: custom ticks
 //TODO: custom coordinates
 
-//TODO: hide grid
-//TODO: text opacity
+
+//TODO: hide grid?
 //TODO: ratio of bounding box
 
+//TODO: graphicscomplex
+
+//TODO: filling for points and curves possible with fillColor,
+//TODO: top/bottom with inequality
+
+//TODO: documentation in md
+
 function drawGraphics2d(id, json) {
+    var myoptions = {
+        elements: {dragToTopOfLayer: true},
+        polygon: { vertices: { layer:5}, borders: {layer: 5}},
+         layer: {
+             text: 5,
+             point: 5,
+             glider: 9,
+             arc: 5,
+             line: 5,
+             circle: 5,
+             curve: 5,
+             turtle: 5,
+             polygon: 5,
+             sector: 3,
+             angle: 5,
+             integral: 5,
+             axis: 2,
+             ticks: 2,
+             grid: 1,
+             image: 5,
+             trace: 0
+         }
+     };
+    JXG.Options = JXG.merge(JXG.Options, myoptions);
     var opts = {},
-    boundingBox = json.extent,
+        boundingBox = json.extent,
         board = JXG.JSXGraph.initBoard(id, {
             boundingbox: [
                 boundingBox.xmin,
@@ -19,17 +51,18 @@ function drawGraphics2d(id, json) {
                 boundingBox.xmax,
                 boundingBox.ymin,
             ],
-            axis: json.axes.hasaxes,
-            grid: false,
+            //axis: json.axes.hasaxes,
+            axis: false,
             keepaspectratio: false,
             showClearTraces: true,
         });
     // draw every element in the json
-    board.suspendUpdate();
+    //board.suspendUpdate();
+    drawAxes(board, json);
     for (element of json.elements) {
-        drawGraphic(board, element,opts);
+        drawGraphic(board, element, opts);
     }
-    board.unsuspendUpdate();
+    //board.unsuspendUpdate();
 }
 
 function drawGraphic(board, json, opts) {
@@ -37,95 +70,158 @@ function drawGraphic(board, json, opts) {
 
     switch (json.type) {
         case "point":
-            args = getArgs(["coords", "color", "opacity", "pointSize"], json, opts, json.type);
+            args = getArgs(
+                ["coords", "color", "opacity", "pointSize"],
+                json,
+                opts,
+                json.type
+            );
             drawPoint(board, args);
             break;
         case "arrow":
         case "line":
-            args = getArgs(["coords", "color", "opacity", "arrow"], json, opts, json.type);
+            args = getArgs(
+                ["coords", "color", "opacity", "arrow", "thickness"],
+                json,
+                opts,
+                json.type
+            );
             drawLine(board, args);
             break;
         case "disk":
         case "circle":
-            args = getArgs(["coords", "color", "opacity", "radius1", "radius2", "angle1", "angle2", "filled"], json, opts, json.type);
+            args = getArgs(
+                [
+                    "coords",
+                    "color",
+                    "opacity",
+                    "radius1",
+                    "radius2",
+                    "angle1",
+                    "angle2",
+                    "filled",
+                ],
+                json,
+                opts,
+                json.type
+            );
             drawCircle(board, args);
             break;
         case "rectangle":
-            args = getArgs(["coords", "color", "opacity"], json, opts, json.type);
+            args = getArgs(
+                ["coords", "color", "opacity"],
+                json,
+                opts,
+                json.type
+            );
             drawRectangle(board, args);
             break;
         case "polygon":
-            args = getArgs(["coords", "color", "opacity"], json, opts, json.type);
+            args = getArgs(
+                ["coords", "color", "opacity"],
+                json,
+                opts,
+                json.type
+            );
             drawPolygon(board, args);
             break;
         case "text":
-            args = getArgs(["coords", "color", "opacity", "texts", "textSize"], json, opts, json.type);
+            args = getArgs(
+                ["coords", "color", "opacity", "texts", "fontSize"],
+                json,
+                opts,
+                json.type
+            );
             drawText(board, args);
             break;
-        case undefined: 
+        case undefined:
             setOption(json, opts);
             break;
         default:
-            console.log("Type " + json.type + " not recognized");
+            console.warn("Type " + json.type + " not supported");
     }
 }
 
-function setOption(json, opts){
+function drawAxes(board, json){
+    var attr = JXG.Options.board.defaultAxes.x;
+    attr.ticks.drawZero = false;
+    var xAxis = board.create('axis', [[0, 0], [1, 0]], attr);
+
+    attr = JXG.Options.axis;
+    var yAxis = board.create('line', [[0, 0], [0, 1]], attr);
+
+    attr = JXG.Options.board.defaultAxes.y.ticks;
+    attr.drawLabels = true;
+    attr.drawZero = false;
+    attr.generateLabelText = function (tick, zero) {
+        return (Math.pow(10, Math.round(tick.usrCoords[2] - zero.usrCoords[2]))).toString();
+    }
+
+    board.create('ticks', [yAxis, 1], attr);
+}
+
+function getScalingFunction(string){
+    switch(string){
+        case "log":
+
+    }
+}
+
+function setOption(json, opts) {
     //TODO: error handling
     opts[json.option] = validateAttr(json.option, json.value, undefined);
 }
 
-function getAttr(attr, json, opts, type){
+function getAttr(attr, json, opts, type) {
     var value;
-    if(json[attr] != undefined) value = validateAttr(attr, json[attr], type);
+    if (json[attr] != undefined) value = validateAttr(attr, json[attr], type);
     else if (opts[attr] != undefined) value = opts[attr];
     else value = validateAttr(attr, undefined, type);
 
     return value;
 }
 
-function validateAttr(attr, value, type){
+function validateAttr(attr, value, type) {
     //TODO: error handling
-    switch(attr){
+    switch (attr) {
         case "color":
-            if(value == undefined) value = [0.0,0.0,0.0];
+            if (value == undefined) value = [0.0, 0.0, 0.0];
             else value = convertColor(value);
             break;
         case "coords":
             value = convertCoords(value);
             break;
         case "opacity":
-            if(value == undefined) value = 1.0;
+            if (value == undefined) value = 1.0;
             break;
         case "pointSize":
-            if(value == undefined) value = 0.005;
+            if (value == undefined) value = 0.005;
             break;
-        case "textSize":
-            if(value == undefined) value = 20;
+        case "fontSize":
+            if (value == undefined) value = 20;
             break;
         case "radius1":
         case "radius2":
-            if(value == undefined) value = 1;
+            if (value == undefined) value = 1;
             break;
         case "arrow":
-            value = (type == "arrow");
+            value = type == "arrow";
             break;
         case "filled":
-            value = (type == "disk");
+            value = type == "disk";
             break;
         default:
     }
     return value;
 }
 
-function getArgs(lst, json, opts, type){
+function getArgs(lst, json, opts, type) {
     var args = {};
-    for(attr of lst){
-        args[attr] = getAttr(attr, json, opts, type)
-    } 
+    for (attr of lst) {
+        args[attr] = getAttr(attr, json, opts, type);
+    }
     return args;
 }
-
 
 function drawPoint(board, args) {
     for (coord of args.coords) {
@@ -176,6 +272,7 @@ function drawLine(board, args) {
         lastArrow: args.arrow,
         strokeColor: args.color,
         strokeOpacity: args.opacity,
+        strokeWidth: (board.canvasWidth * args.thickness) / 2,
     });
 }
 
@@ -197,7 +294,8 @@ function drawText(board, args) {
             {
                 color: args.color,
                 fixed: true,
-                fontSize: args.textSize,
+                opacity: args.opacity,
+                fontSize: args.fontSize,
             }
         );
     }
@@ -295,6 +393,34 @@ function convertCoordsCurve(coords) {
 }
 
 function testRun() {
+    /**
+    drawGraphics2d("graphics2d", {
+        elements: [
+            { option: "opacity", value: 1.0 },
+            { option: "pointSize", value: 0.0013 },
+            { option: "textSize", value: 12 },
+            { option: "color", value: [1.0, 0.0, 0.0] },
+            {
+                type: "disk",
+                radius1: 1.0,
+                radius2: 1.0,
+                coords: [[[0.0, 0.0]]],
+            },
+            { option: "color", value: [0.0, 1.0, 0.0] },
+            { type: "rectangle", coords: [[[0.0, 0.0]], [[2.0, 2.0]]] },
+            { option: "color", value: [0.0, 0.0, 1.0] },
+            {
+                type: "disk",
+                radius1: 1.0,
+                radius2: 1.0,
+                coords: [[[2.0, 2.0]]],
+            },
+        ],
+        extent: { xmin: -1.0, xmax: 3.0, ymin: -1.0, ymax: 3.0 },
+        axes: { hasaxes: false },
+        aspectRatio: { symbol: "automatic" },
+    });
+    **/
     drawGraphics2d("graphics2d", {
         elements: [
             {
@@ -333,6 +459,7 @@ function testRun() {
                     [[4.0, 3.0]],
                     [[4.0, 7.0]],
                 ],
+                thickness: 0.01
             },
             {
                 type: "point",
@@ -359,6 +486,7 @@ function testRun() {
                 color: [0.2, 0.0, 1.0],
                 opacity: 1.0,
                 coords: [[[0.0, 0.0]], [[-4.0, 3.0]]],
+                thickness: 0.02
             },
             {
                 type: "polygon",
@@ -374,7 +502,8 @@ function testRun() {
             {
                 type: "text",
                 color: [0.5, 0.4, 0.1],
-                textSize: 40,
+                fontSize: 40,
+                opacity: 0.8,
                 coords: [[[-5, -5]], [[5, 5]]],
                 texts: ["Bottom left", "Top right"],
             },
