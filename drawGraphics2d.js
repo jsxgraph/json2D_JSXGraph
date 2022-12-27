@@ -1,13 +1,9 @@
 //TODO: no scaled coords yet
 
-//TODO: axes options?
-//TODO: scaled axes
-//TODO: logarithmic scale -> very important, see example
-//TODO: custom ticks
-//TODO: custom coordinates
-
-
+//TODO: axes options
+//TODO: logarithmic scale and display function
 //TODO: hide grid?
+
 //TODO: ratio of bounding box
 
 //TODO: graphicscomplex
@@ -134,6 +130,9 @@ function drawGraphic(board, json, opts) {
             );
             drawText(board, args);
             break;
+        case "graphicscomplex":
+            drawGraphicsComplex(board, json, opts);
+            break;
         case undefined:
             setOption(json, opts);
             break;
@@ -141,6 +140,18 @@ function drawGraphic(board, json, opts) {
             console.warn("Type " + json.type + " not supported");
     }
 }
+
+
+function drawGraphicsComplex(board, json, opts){
+    debugger
+    opts.graphicsComplex = true;
+    opts.graphicsComplexCoords = json.coords;
+    for (element of json.data) {
+        drawGraphic(board, element, opts);
+    }
+    opts.graphicsComplex = false;
+}
+
 
 function drawAxes(board, json){
     var attr = JXG.Options.board.defaultAxes.x;
@@ -168,28 +179,25 @@ function getScalingFunction(string){
 }
 
 function setOption(json, opts) {
-    //TODO: error handling
     opts[json.option] = validateAttr(json.option, json.value, undefined);
 }
 
 function getAttr(attr, json, opts, type) {
     var value;
-    if (json[attr] != undefined) value = validateAttr(attr, json[attr], type);
+    if (json[attr] != undefined) value = validateAttr(attr, json[attr], opts, type);
     else if (opts[attr] != undefined) value = opts[attr];
-    else value = validateAttr(attr, undefined, type);
-
+    else value = validateAttr(attr, undefined, opts, type);
     return value;
 }
 
-function validateAttr(attr, value, type) {
-    //TODO: error handling
+function validateAttr(attr, value, opts, type) {
     switch (attr) {
         case "color":
             if (value == undefined) value = [0.0, 0.0, 0.0];
             else value = convertColor(value);
             break;
         case "coords":
-            value = convertCoords(value);
+            value = convertCoords(value, opts);
             break;
         case "opacity":
             if (value == undefined) value = 1.0;
@@ -374,10 +382,13 @@ function convertColor(rgb) {
     return color;
 }
 
-function convertCoords(coords) {
-    var newCoords = [];
-    for (key in coords) {
-        newCoords[key] = coords[key][0];
+function convertCoords(coords, opts) {
+    var newCoords = [], target;
+
+    if(opts.graphicsComplex) target = opts.graphicsComplexCoords;
+    else target = coords;
+    for(key in coords) {
+        newCoords[key] = target[key][0];
     }
     return newCoords;
 }
@@ -393,8 +404,58 @@ function convertCoordsCurve(coords) {
 }
 
 function testRun() {
-    /**
     drawGraphics2d("graphics2d", {
+  "elements": [{
+    "option": "opacity",
+    "value": 1.0
+  }, {
+    "option": "pointSize",
+    "value": 0.0013
+  }, {
+    "option": "textSize",
+    "value": 12
+  }, {
+    "option": "fontSize",
+    "value": 12
+  }, {
+    "option": "color",
+    "value": [0.0, 0.0, 0.0]
+  }, {
+    "type": "graphicscomplex",
+    "coords": [
+      [
+        [1.0, 0.0]
+      ],
+      [
+        [0.0, 1.0]
+      ],
+      [
+        [-1.0, 0.0]
+      ],
+      [
+        [0.0, -1.0]
+      ]
+    ],
+    "data": [{
+      "type": "polygon",
+      "coords": [1, 2, 3, 4]
+    }]
+  }],
+  "extent": {
+    "xmin": -1.0,
+    "xmax": 1.0,
+    "ymin": -1.0,
+    "ymax": 1.0
+  },
+  "axes": {
+    "hasaxes": false
+  },
+  "aspectRatio": {
+    "symbol": "automatic"
+  }
+});
+
+    /**
         elements: [
             { option: "opacity", value: 1.0 },
             { option: "pointSize", value: 0.0013 },
@@ -420,7 +481,6 @@ function testRun() {
         axes: { hasaxes: false },
         aspectRatio: { symbol: "automatic" },
     });
-    **/
     drawGraphics2d("graphics2d", {
         elements: [
             {
@@ -468,13 +528,6 @@ function testRun() {
                 opacity: 0.5,
                 pointSize: 0.005,
             },
-            {option: "pointSize", value: 0.01},
-            {option: "color", value: [1,0,1]},
-            {
-                type: "point",
-                coords: [[[-1, -1]], [[-2, -2]], [[-3, -3]]],
-                opacity: 0.5,
-            },
             {
                 type: "rectangle",
                 color: [0.0, 0.5, 1.0],
@@ -499,6 +552,13 @@ function testRun() {
                     [[-1.0, 0.0]],
                 ],
             },
+            {option: "pointSize", value: 0.01},
+            {option: "color", value: [1,0,1]},
+            {
+                type: "point",
+                coords: [[[-1, -1]], [[-2, -2]], [[-3, -3]]],
+                opacity: 0.5,
+            },
             {
                 type: "text",
                 color: [0.5, 0.4, 0.1],
@@ -511,4 +571,5 @@ function testRun() {
         extent: { xmin: -6.0, xmax: 9.0, ymin: -6.0, ymax: 9.0 },
         axes: { hasaxes: true },
     });
+    **/
 }
