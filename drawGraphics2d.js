@@ -6,8 +6,6 @@
 
 //TODO: ratio of bounding box
 
-//TODO: graphicscomplex
-
 //TODO: filling for points and curves possible with fillColor,
 //TODO: top/bottom with inequality
 
@@ -15,43 +13,38 @@
 
 function drawGraphics2d(id, json) {
     var myoptions = {
-        elements: {dragToTopOfLayer: true},
-        polygon: { vertices: { layer:5}, borders: {layer: 5}},
-         layer: {
-             text: 5,
-             point: 5,
-             glider: 9,
-             arc: 5,
-             line: 5,
-             circle: 5,
-             curve: 5,
-             turtle: 5,
-             polygon: 5,
-             sector: 3,
-             angle: 5,
-             integral: 5,
-             axis: 2,
-             ticks: 2,
-             grid: 1,
-             image: 5,
-             trace: 0
-         }
-     };
+        elements: { dragToTopOfLayer: true },
+        polygon: { vertices: { layer: 5 }, borders: { layer: 5 } },
+        layer: {
+            text: 5,
+            point: 5,
+            glider: 9,
+            arc: 5,
+            line: 5,
+            circle: 5,
+            curve: 5,
+            turtle: 5,
+            polygon: 5,
+            sector: 3,
+            angle: 5,
+            integral: 5,
+            axis: 2,
+            ticks: 2,
+            grid: 1,
+            image: 5,
+            trace: 0,
+        },
+    };
     JXG.Options = JXG.merge(JXG.Options, myoptions);
-    var opts = {},
-        boundingBox = json.extent,
+    var boundingBox = json.extent,
         board = JXG.JSXGraph.initBoard(id, {
-            boundingbox: [
-                boundingBox.xmin,
-                boundingBox.ymax,
-                boundingBox.xmax,
-                boundingBox.ymin,
-            ],
+            boundingbox: [boundingBox.xmin, boundingBox.ymax, boundingBox.xmax, boundingBox.ymin],
             //axis: json.axes.hasaxes,
             axis: false,
             keepaspectratio: false,
             showClearTraces: true,
-        });
+        }),
+        opts = { graphicsComplex: false, boundingBox: boundingBox };
     // draw every element in the json
     //board.suspendUpdate();
     drawAxes(board, json);
@@ -66,37 +59,18 @@ function drawGraphic(board, json, opts) {
 
     switch (json.type) {
         case "point":
-            args = getArgs(
-                ["coords", "color", "opacity", "pointSize"],
-                json,
-                opts,
-                json.type
-            );
+            args = getArgs(["coords", "color", "opacity", "pointSize"], json, opts, json.type);
             drawPoint(board, args);
             break;
         case "arrow":
         case "line":
-            args = getArgs(
-                ["coords", "color", "opacity", "arrow", "thickness"],
-                json,
-                opts,
-                json.type
-            );
+            args = getArgs(["coords", "color", "opacity", "arrow", "thickness"], json, opts, json.type);
             drawLine(board, args);
             break;
         case "disk":
         case "circle":
             args = getArgs(
-                [
-                    "coords",
-                    "color",
-                    "opacity",
-                    "radius1",
-                    "radius2",
-                    "angle1",
-                    "angle2",
-                    "filled",
-                ],
+                ["coords", "color", "opacity", "radius1", "radius2", "angle1", "angle2", "filled"],
                 json,
                 opts,
                 json.type
@@ -104,30 +78,15 @@ function drawGraphic(board, json, opts) {
             drawCircle(board, args);
             break;
         case "rectangle":
-            args = getArgs(
-                ["coords", "color", "opacity"],
-                json,
-                opts,
-                json.type
-            );
+            args = getArgs(["coords", "color", "opacity"], json, opts, json.type);
             drawRectangle(board, args);
             break;
         case "polygon":
-            args = getArgs(
-                ["coords", "color", "opacity"],
-                json,
-                opts,
-                json.type
-            );
+            args = getArgs(["coords", "color", "opacity"], json, opts, json.type);
             drawPolygon(board, args);
             break;
         case "text":
-            args = getArgs(
-                ["coords", "color", "opacity", "texts", "fontSize"],
-                json,
-                opts,
-                json.type
-            );
+            args = getArgs(["coords", "color", "opacity", "texts", "fontSize"], json, opts, json.type);
             drawText(board, args);
             break;
         case "graphicscomplex":
@@ -141,9 +100,7 @@ function drawGraphic(board, json, opts) {
     }
 }
 
-
-function drawGraphicsComplex(board, json, opts){
-    debugger
+function drawGraphicsComplex(board, json, opts) {
     opts.graphicsComplex = true;
     opts.graphicsComplexCoords = json.coords;
     for (element of json.data) {
@@ -152,29 +109,41 @@ function drawGraphicsComplex(board, json, opts){
     opts.graphicsComplex = false;
 }
 
-
-function drawAxes(board, json){
+function drawAxes(board, json) {
     var attr = JXG.Options.board.defaultAxes.x;
     attr.ticks.drawZero = false;
-    var xAxis = board.create('axis', [[0, 0], [1, 0]], attr);
+    var xAxis = board.create(
+        "axis",
+        [
+            [0, 0],
+            [1, 0],
+        ],
+        attr
+    );
 
     attr = JXG.Options.axis;
-    var yAxis = board.create('line', [[0, 0], [0, 1]], attr);
+    var yAxis = board.create(
+        "line",
+        [
+            [0, 0],
+            [0, 1],
+        ],
+        attr
+    );
 
     attr = JXG.Options.board.defaultAxes.y.ticks;
     attr.drawLabels = true;
     attr.drawZero = false;
     attr.generateLabelText = function (tick, zero) {
-        return (Math.pow(10, Math.round(tick.usrCoords[2] - zero.usrCoords[2]))).toString();
-    }
+        return Math.pow(10, Math.round(tick.usrCoords[2] - zero.usrCoords[2])).toString();
+    };
 
-    board.create('ticks', [yAxis, 1], attr);
+    board.create("ticks", [yAxis, 1], attr);
 }
 
-function getScalingFunction(string){
-    switch(string){
+function getScalingFunction(string) {
+    switch (string) {
         case "log":
-
     }
 }
 
@@ -249,16 +218,12 @@ function drawCircle(board, args) {
     for (coord of args.coords) {
         // calculate the foci of the ellipse
         var foci = calculateFoci(args.radius1, args.radius2, coord);
-        board.create(
-            "ellipse",
-            [foci[0], foci[1], foci[2], args.angle1, args.angle2],
-            {
-                strokeColor: args.color,
-                fillColor: args.color,
-                strokeOpacity: args.opacity,
-                fillOpacity: args.opacity * args.filled,
-            }
-        );
+        board.create("ellipse", [foci[0], foci[1], foci[2], args.angle1, args.angle2], {
+            strokeColor: args.color,
+            fillColor: args.color,
+            strokeOpacity: args.opacity,
+            fillOpacity: args.opacity * args.filled,
+        });
     }
 }
 
@@ -296,16 +261,12 @@ function drawPolygon(board, args) {
 
 function drawText(board, args) {
     for (index in args.coords) {
-        board.create(
-            "text",
-            [args.coords[index][0], args.coords[index][1], args.texts[index]],
-            {
-                color: args.color,
-                fixed: true,
-                opacity: args.opacity,
-                fontSize: args.fontSize,
-            }
-        );
+        board.create("text", [args.coords[index][0], args.coords[index][1], args.texts[index]], {
+            color: args.color,
+            fixed: true,
+            opacity: args.opacity,
+            fontSize: args.fontSize,
+        });
     }
 }
 
@@ -383,12 +344,20 @@ function convertColor(rgb) {
 }
 
 function convertCoords(coords, opts) {
-    var newCoords = [], target;
+    var x,
+        y,
+        newCoords = [],
+        target = opts.graphicsComplex ? opts.graphicsComplexCoords : coords,
+        key;
 
-    if(opts.graphicsComplex) target = opts.graphicsComplexCoords;
-    else target = coords;
-    for(key in coords) {
-        newCoords[key] = target[key][0];
+    for (index in coords) {
+        key = opts.graphicsComplex ? coords[index] : index;
+        if (target[key][0] != null) newCoords[index] = target[key][0];
+        else {
+            x = opts.boundingBox.xmin + target[key][1][0] * (opts.boundingBox.xmax - opts.boundingBox.xmin);
+            y = opts.boundingBox.ymin + target[key][1][1] * (opts.boundingBox.ymax - opts.boundingBox.ymin);
+            newCoords[index] = [x, y];
+        }
     }
     return newCoords;
 }
@@ -405,55 +374,56 @@ function convertCoordsCurve(coords) {
 
 function testRun() {
     drawGraphics2d("graphics2d", {
-  "elements": [{
-    "option": "opacity",
-    "value": 1.0
-  }, {
-    "option": "pointSize",
-    "value": 0.0013
-  }, {
-    "option": "textSize",
-    "value": 12
-  }, {
-    "option": "fontSize",
-    "value": 12
-  }, {
-    "option": "color",
-    "value": [0.0, 0.0, 0.0]
-  }, {
-    "type": "graphicscomplex",
-    "coords": [
-      [
-        [1.0, 0.0]
-      ],
-      [
-        [0.0, 1.0]
-      ],
-      [
-        [-1.0, 0.0]
-      ],
-      [
-        [0.0, -1.0]
-      ]
-    ],
-    "data": [{
-      "type": "polygon",
-      "coords": [1, 2, 3, 4]
-    }]
-  }],
-  "extent": {
-    "xmin": -1.0,
-    "xmax": 1.0,
-    "ymin": -1.0,
-    "ymax": 1.0
-  },
-  "axes": {
-    "hasaxes": false
-  },
-  "aspectRatio": {
-    "symbol": "automatic"
-  }
-});
+        elements: [
+            {
+                option: "opacity",
+                value: 1.0,
+            },
+            {
+                option: "pointSize",
+                value: 0.0013,
+            },
+            {
+                option: "textSize",
+                value: 12,
+            },
+            {
+                option: "fontSize",
+                value: 12,
+            },
+            {
+                option: "color",
+                value: [0.0, 0.0, 0.0],
+            },
+            {
+                type: "graphicscomplex",
+                coords: [
+                    [null, [1.0, 0.5]],
+                    [null, [0.5, 0.1]],
+                    [null, [0.0, 0.5]],
+                    [null, [0.5, 0.6]],
+                ],
+                data: [
+                    {
+                        type: "polygon",
+                        coords: [0, 1, 2, 3],
+                    },
+                ],
+            },
+        ],
+        extent: {
+            xmin: -20.0,
+            xmax: 10.0,
+            ymin: -10.0,
+            ymax: 15.0,
+        },
+        axes: {
+            hasaxes: false,
+        },
+        aspectRatio: {
+            symbol: "automatic",
+        },
+    });
 
     /**
         elements: [
