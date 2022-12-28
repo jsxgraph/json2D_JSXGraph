@@ -1,6 +1,3 @@
-//TODO: axes options
-//TODO: logarithmic scale and display function
-
 //TODO: ratio of bounding box
 
 //TODO: filling for points and curves possible with fillColor,
