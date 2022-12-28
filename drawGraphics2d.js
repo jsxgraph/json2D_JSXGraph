@@ -1,6 +1,5 @@
 //TODO: axes options
 //TODO: logarithmic scale and display function
-//TODO: hide grid?
 
 //TODO: ratio of bounding box
 
@@ -34,23 +33,26 @@ function drawGraphics2d(id, json) {
         },
     };
     JXG.Options = JXG.merge(JXG.Options, myoptions);
-    var boundingBox = json.extent,
+    var boundingBox = json.extent === undefined ? [-10, 10, 10, -10] : json.extent,
         board = JXG.JSXGraph.initBoard(id, {
             boundingbox: [boundingBox.xmin, boundingBox.ymax, boundingBox.xmax, boundingBox.ymin],
             //axis: json.axes.hasaxes,
-            axis: false,
+            axis: json.axes === undefined || json.axes.hasaxes === true,
+            defaultAxes: {
+    x: { ticks: { visible: true, majorHeight: 5 } },
+    y: { ticks: { visible: true, majorHeight: 5 } }
+  },
             keepaspectratio: false,
             showClearTraces: true,
             showCopyRight: false,
+            grid: false,
         }),
         opts = { graphicsComplex: false, boundingBox: boundingBox };
     // draw every element in the json
-    //board.suspendUpdate();
-    drawAxes(board, json);
+    drawAxes(board, json.axes, boundingBox);
     for (element of json.elements) {
         drawGraphic(board, element, opts);
     }
-    //board.unsuspendUpdate();
 }
 
 function drawGraphic(board, json, opts) {
@@ -108,37 +110,80 @@ function drawGraphicsComplex(board, json, opts) {
     opts.graphicsComplex = false;
 }
 
-function drawAxes(board, json) {
-    var attr = JXG.Options.board.defaultAxes.x;
-    attr.ticks.drawZero = false;
-    var xAxis = board.create(
-        "axis",
-        [
-            [0, 0],
-            [1, 0],
-        ],
-        attr
-    );
+function drawAxes(board, json, boundingBox) {
+    var attr = JXG.Options.axis,
+        conversionX = function(n){return n};
+        conversionY = function(n){return n};
+    if (json === undefined || json.hasaxes === true) return;
 
-    attr = JXG.Options.axis;
-    var yAxis = board.create(
-        "line",
-        [
-            [0, 0],
-            [0, 1],
-        ],
-        attr
-    );
+    if (json.hasaxes[0]) {
+        var xAxis = board.create(
+            "line",
+            [
+                [0, 0],
+                [1, 0],
+            ],
+            attr
+        );
+        conversionX = drawTicks(board, xAxis, json, boundingBox.xmax - boundingBox.xmin, false);
+    }
 
-    attr = JXG.Options.board.defaultAxes.y.ticks;
-    attr.drawLabels = true;
-    attr.drawZero = false;
-    attr.fixed = true;
+    if (json.hasaxes[1]) {
+        var yAxis = board.create(
+            "line",
+            [
+                [0, 0],
+                [0, 1],
+            ],
+            attr
+        );
+        conversionY = drawTicks(board, yAxis, json, boundingBox.ymax - boundingBox.ymin, boundingBox, true);
+    }
+    
+
+    if (json.hasaxes[0] || json.hasaxes[1])
+        board.highlightInfobox = function (x, y, el) {
+            this.infobox.setText("(" + conversionX(x) + ", " + conversionY(y) + ")");
+        };
+}
+
+function drawTicks(board, axis, json, length, index) {
+    var attr = index ? JXG.Options.board.defaultAxes.y.ticks : JXG.Options.board.defaultAxes.x.ticks,
+        conversion,
+        scaling = json.scaling === undefined ? ["None", "None"] : json.scaling,
+        coordIndex = index ? 1 : 0;
+
+    switch (scaling[coordIndex]) {
+        case "None":
+            conversion = function (n) {
+                return n;
+            };
+            break;
+        case "Log":
+            attr.drawZero = false;
+            conversion = function (n) {
+                return +(Math.exp(Math.round(n))).toFixed(2);
+            };
+            break;
+        case "Log2":
+            attr.drawZero = false;
+            conversion = function (n) {
+                return Math.pow(2, Math.round(n));
+            };
+            break;
+        case "Log10":
+            attr.drawZero = false;
+            conversion = function (n) {
+                return Math.pow(10, Math.round(n));
+            };
+            break;
+    }
     attr.generateLabelText = function (tick, zero) {
-        return Math.pow(10, Math.round(tick.usrCoords[2] - zero.usrCoords[2])).toString();
+        return Math.round(conversion(tick.usrCoords[coordIndex + 1] - zero.usrCoords[coordIndex + 1])).toString();
     };
-
-    board.create("ticks", [yAxis, 1], attr);
+    attr.drawLabels = true;
+    board.create("ticks", [axis, calculateSetOff(length)], attr);
+    return conversion;
 }
 
 function getScalingFunction(string) {
@@ -372,6 +417,11 @@ function convertCoordsCurve(coords) {
     return [x, y];
 }
 
+function calculateSetOff(length) {
+    var setOff = Math.floor(Math.log10(Math.abs(length) / 2));
+    return 10 ** setOff;
+}
+
 function testRun() {
     /*
     drawGraphics2d("graphics2d", {
@@ -486,13 +536,8 @@ function testRun() {
                 type: "line",
                 color: [1.0, 0.5, 0.0],
                 opacity: 0.6,
-                coords: [
-                    [[1.0, 1.0]],
-                    [[3.0, 1.0]],
-                    [[4.0, 3.0]],
-                    [[4.0, 7.0]],
-                ],
-                thickness: 0.01
+                coords: [[[1.0, 1.0]], [[3.0, 1.0]], [[4.0, 3.0]], [[4.0, 7.0]]],
+                thickness: 0.01,
             },
             {
                 type: "point",
@@ -512,21 +557,16 @@ function testRun() {
                 color: [0.2, 0.0, 1.0],
                 opacity: 1.0,
                 coords: [[[0.0, 0.0]], [[-4.0, 3.0]]],
-                thickness: 0.02
+                thickness: 0.02,
             },
             {
                 type: "polygon",
                 color: [1.0, 0.5, 0.0],
                 opacity: 1.0,
-                coords: [
-                    [[-1.0, -1.0]],
-                    [[0.0, -1.0]],
-                    [[-4.0, -4.0]],
-                    [[-1.0, 0.0]],
-                ],
+                coords: [[[-1.0, -1.0]], [[0.0, -1.0]], [[-4.0, -4.0]], [[-1.0, 0.0]]],
             },
-            {option: "pointSize", value: 0.01},
-            {option: "color", value: [1,0,1]},
+            { option: "pointSize", value: 0.01 },
+            { option: "color", value: [1, 0, 1] },
             {
                 type: "point",
                 coords: [[[-1, -1]], [[-2, -2]], [[-3, -3]]],
@@ -541,7 +581,7 @@ function testRun() {
                 texts: ["Bottom left", "Top right"],
             },
         ],
-        extent: { xmin: -6.0, xmax: 9.0, ymin: -6.0, ymax: 9.0 },
-        axes: { hasaxes: true },
+        extent: { xmin: -9.0, xmax: 9.0, ymin: -9.0, ymax: 9.0 },
+        axes: { hasaxes: [true,true], scaling: ["None", "Log10"] },
     });
 }
