@@ -1,12 +1,65 @@
 //TODO: ratio of bounding box
 
+//TODO: default options
+
 //TODO: filling for points and curves possible with fillColor,
 //TODO: top/bottom with inequality
 
 //TODO: documentation in md
+function generateGraphics2dDiv(json, maxWidth, maxHeight) {
+    var json2dDiv, maxRatio, givenRatio, width, height;
+    json2dDiv = document.createElement("div");
+    maxRatio = maxHeight/maxWidth;
+    if(json.aspectRatio === undefined){
+        width = maxWidth;
+        height = maxHeight;
+    }
+    else{
+        if(json.aspectRatio.symbol === undefined){
+            if(json.aspectRatio.factor === undefined){
+                givenRatio = json.aspectRatio.factor;
+                // width dominates
+                if(givenRatio < maxRatio){
+                    width = maxWidth;
+                    height = maxWidth * givenRatio;
+                }
+                // height dominates
+                else{
+                    height = maxHeight;
+                    width = maxHeight / givenRatio;
+                }
+            }
+        }
+        else if(json.aspectRatio.symbol == "automatic"){
+            givenRatio = json.extent === undefined ? 1 : (json.extent.ymax -json.extent.ymin)/(json.extent.xmax -json.extent.xmin)
+            // width dominates
+            if(givenRatio < maxRatio){
+                width = maxWidth;
+                height = maxWidth * givenRatio;
+            }
+            // height dominates
+            else{
+                height = maxHeight;
+                width = maxHeight / givenRatio;
+            }
+        }
+        else if(json.aspectRatio.symbol == "full"){
+            width = maxWidth;
+            height = maxHeight;
+        }
+    }
+
+    json2dDiv.setAttribute("width", width)
+    json2dDiv.setAttribute("height", height)
+
+    drawGraphics2d(json2dDiv.id, json);
+
+    return json2dDiv;
+}
 
 function drawGraphics2d(id, json) {
-    var myoptions = {
+    var myoptions, extent, axes, grid, board, opts;
+    myoptions = {
         elements: { dragToTopOfLayer: true },
         polygon: { vertices: { layer: 5 }, borders: { layer: 5 } },
         layer: {
@@ -30,23 +83,28 @@ function drawGraphics2d(id, json) {
         },
     };
     JXG.Options = JXG.merge(JXG.Options, myoptions);
-    var boundingBox = json.extent === undefined ? [-10, 10, 10, -10] : json.extent,
-        board = JXG.JSXGraph.initBoard(id, {
-            boundingbox: [boundingBox.xmin, boundingBox.ymax, boundingBox.xmax, boundingBox.ymin],
+
+    extent = json.extent === undefined ? { xmin: -9.0, xmax: 9.0, ymin: -9.0, ymax: 9.0 } : json.extent;
+    axes = json.axes === undefined ? { hasaxes: false, scaling: ["None", "None"], grid: false } : json.axes;
+    grid = json.axes.grid ? -1 : 5;
+
+    board = JXG.JSXGraph.initBoard(id, {
+            boundingbox: [extent.xmin, extent.ymax, extent.xmax, extent.ymin],
             //axis: json.axes.hasaxes,
-            axis: json.axes === undefined || json.axes.hasaxes === true,
+            axis: json.axes.hasaxes === true,
             defaultAxes: {
-    x: { ticks: { visible: true, majorHeight: 5 } },
-    y: { ticks: { visible: true, majorHeight: 5 } }
-  },
+                x: { ticks: { visible: true, majorHeight: grid } },
+                y: { ticks: { visible: true, majorHeight: grid } },
+            },
             keepaspectratio: false,
             showClearTraces: true,
             showCopyRight: false,
             grid: false,
-        }),
-        opts = { graphicsComplex: false, boundingBox: boundingBox };
+        });
+    opts = { graphicsComplex: false, extent: extent };
+
     // draw every element in the json
-    drawAxes(board, json.axes, boundingBox);
+    drawAxes(board, json.axes, extent);
     for (element of json.elements) {
         drawGraphic(board, element, opts);
     }
@@ -107,10 +165,14 @@ function drawGraphicsComplex(board, json, opts) {
     opts.graphicsComplex = false;
 }
 
-function drawAxes(board, json, boundingBox) {
+function drawAxes(board, json, extent) {
     var attr = JXG.Options.axis,
-        conversionX = function(n){return n};
-        conversionY = function(n){return n};
+        conversionX = function (n) {
+            return n;
+        };
+    conversionY = function (n) {
+        return n;
+    };
     if (json === undefined || json.hasaxes === true) return;
 
     if (json.hasaxes[0]) {
@@ -122,7 +184,7 @@ function drawAxes(board, json, boundingBox) {
             ],
             attr
         );
-        conversionX = drawTicks(board, xAxis, json, boundingBox.xmax - boundingBox.xmin, false);
+        conversionX = drawTicks(board, xAxis, json, extent.xmax - extent.xmin, false);
     }
 
     if (json.hasaxes[1]) {
@@ -134,9 +196,8 @@ function drawAxes(board, json, boundingBox) {
             ],
             attr
         );
-        conversionY = drawTicks(board, yAxis, json, boundingBox.ymax - boundingBox.ymin, boundingBox, true);
+        conversionY = drawTicks(board, yAxis, json, extent.ymax - extent.ymin, extent, true);
     }
-    
 
     if (json.hasaxes[0] || json.hasaxes[1])
         board.highlightInfobox = function (x, y, el) {
@@ -159,7 +220,7 @@ function drawTicks(board, axis, json, length, index) {
         case "Log":
             attr.drawZero = false;
             conversion = function (n) {
-                return +(Math.exp(Math.round(n))).toFixed(2);
+                return +Math.exp(Math.round(n)).toFixed(2);
             };
             break;
         case "Log2":
@@ -396,8 +457,8 @@ function convertCoords(coords, opts) {
         key = opts.graphicsComplex ? coords[index] - 1 : index;
         if (target[key][0] != null) newCoords[index] = target[key][0];
         else {
-            x = opts.boundingBox.xmin + target[key][1][0] * (opts.boundingBox.xmax - opts.boundingBox.xmin);
-            y = opts.boundingBox.ymin + target[key][1][1] * (opts.boundingBox.ymax - opts.boundingBox.ymin);
+            x = opts.extent.xmin + target[key][1][0] * (opts.extent.xmax - opts.extent.xmin);
+            y = opts.extent.ymin + target[key][1][1] * (opts.extent.ymax - opts.extent.ymin);
             newCoords[index] = [x, y];
         }
     }
@@ -579,6 +640,6 @@ function testRun() {
             },
         ],
         extent: { xmin: -9.0, xmax: 9.0, ymin: -9.0, ymax: 9.0 },
-        axes: { hasaxes: [true,true], scaling: ["None", "Log10"] },
+        axes: { hasaxes: [true, true], scaling: ["None", "Log10"] },
     });
 }
