@@ -1,56 +1,51 @@
-//TODO: ratio of bounding box
-
-//TODO: default options
-
-//TODO: filling for points and curves possible with fillColor,
 //TODO: top/bottom with inequality
 
 //TODO: documentation in md
 function generateGraphics2dDiv(json, maxWidth, maxHeight) {
     var json2dDiv, maxRatio, givenRatio, width, height;
     json2dDiv = document.createElement("div");
-    maxRatio = maxHeight/maxWidth;
-    if(json.aspectRatio === undefined){
+    maxRatio = maxHeight / maxWidth;
+    if (json.aspectRatio === undefined) {
         width = maxWidth;
         height = maxHeight;
-    }
-    else{
-        if(json.aspectRatio.symbol === undefined){
-            if(json.aspectRatio.factor === undefined){
+    } else {
+        if (json.aspectRatio.symbol === undefined) {
+            if (json.aspectRatio.factor === undefined) {
                 givenRatio = json.aspectRatio.factor;
                 // width dominates
-                if(givenRatio < maxRatio){
+                if (givenRatio < maxRatio) {
                     width = maxWidth;
                     height = maxWidth * givenRatio;
                 }
                 // height dominates
-                else{
+                else {
                     height = maxHeight;
                     width = maxHeight / givenRatio;
                 }
             }
-        }
-        else if(json.aspectRatio.symbol == "automatic"){
-            givenRatio = json.extent === undefined ? 1 : (json.extent.ymax -json.extent.ymin)/(json.extent.xmax -json.extent.xmin)
+        } else if (json.aspectRatio.symbol == "automatic") {
+            givenRatio =
+                json.extent === undefined
+                    ? 1
+                    : (json.extent.ymax - json.extent.ymin) / (json.extent.xmax - json.extent.xmin);
             // width dominates
-            if(givenRatio < maxRatio){
+            if (givenRatio < maxRatio) {
                 width = maxWidth;
                 height = maxWidth * givenRatio;
             }
             // height dominates
-            else{
+            else {
                 height = maxHeight;
                 width = maxHeight / givenRatio;
             }
-        }
-        else if(json.aspectRatio.symbol == "full"){
+        } else if (json.aspectRatio.symbol == "full") {
             width = maxWidth;
             height = maxHeight;
         }
     }
 
-    json2dDiv.setAttribute("width", width)
-    json2dDiv.setAttribute("height", height)
+    json2dDiv.setAttribute("width", width);
+    json2dDiv.setAttribute("height", height);
 
     drawGraphics2d(json2dDiv.id, json);
 
@@ -75,7 +70,7 @@ function drawGraphics2d(id, json) {
             sector: 3,
             angle: 5,
             integral: 5,
-            axis: 2,
+            axis: 3,
             ticks: 2,
             grid: 1,
             image: 5,
@@ -89,18 +84,18 @@ function drawGraphics2d(id, json) {
     grid = json.axes.grid ? -1 : 5;
 
     board = JXG.JSXGraph.initBoard(id, {
-            boundingbox: [extent.xmin, extent.ymax, extent.xmax, extent.ymin],
-            //axis: json.axes.hasaxes,
-            axis: json.axes.hasaxes === true,
-            defaultAxes: {
-                x: { ticks: { visible: true, majorHeight: grid } },
-                y: { ticks: { visible: true, majorHeight: grid } },
-            },
-            keepaspectratio: false,
-            showClearTraces: true,
-            showCopyRight: false,
-            grid: false,
-        });
+        boundingbox: [extent.xmin, extent.ymax, extent.xmax, extent.ymin],
+        //axis: json.axes.hasaxes,
+        axis: json.axes.hasaxes === true,
+        defaultAxes: {
+            x: { ticks: { visible: true, majorHeight: grid } },
+            y: { ticks: { visible: true, majorHeight: grid } },
+        },
+        keepaspectratio: false,
+        showClearTraces: true,
+        showCopyRight: false,
+        grid: false,
+    });
     opts = { graphicsComplex: false, extent: extent };
 
     // draw every element in the json
@@ -115,12 +110,12 @@ function drawGraphic(board, json, opts) {
 
     switch (json.type) {
         case "point":
-            args = getArgs(["coords", "color", "opacity", "pointSize"], json, opts, json.type);
+            args = getArgs(["coords", "color", "opacity", "filling", "pointSize"], json, opts, json.type);
             drawPoint(board, args);
             break;
         case "arrow":
         case "line":
-            args = getArgs(["coords", "color", "opacity", "arrow", "thickness"], json, opts, json.type);
+            args = getArgs(["coords", "color", "opacity", "filling", "arrow", "thickness"], json, opts, json.type);
             drawLine(board, args);
             break;
         case "disk":
@@ -210,44 +205,40 @@ function drawTicks(board, axis, json, length, index) {
         conversion,
         scaling = json.scaling === undefined ? ["None", "None"] : json.scaling,
         coordIndex = index ? 1 : 0;
-
     switch (scaling[coordIndex]) {
-        case "None":
+        case "log":
+            attr.drawZero = false;
+            conversion = function (n) {
+                return +Math.exp(n).toFixed(2);
+            };
+            break;
+        case "log2":
+            attr.drawZero = false;
+            conversion = function (n) {
+                return Math.pow(2,n);
+            };
+            break;
+        case "log10":
+            attr.drawZero = false;
+            conversion = function (n) {
+                return Math.pow(10, n);
+            };
+            break;
+        default:
             conversion = function (n) {
                 return n;
             };
             break;
-        case "Log":
-            attr.drawZero = false;
-            conversion = function (n) {
-                return +Math.exp(Math.round(n)).toFixed(2);
-            };
-            break;
-        case "Log2":
-            attr.drawZero = false;
-            conversion = function (n) {
-                return Math.pow(2, Math.round(n));
-            };
-            break;
-        case "Log10":
-            attr.drawZero = false;
-            conversion = function (n) {
-                return Math.pow(10, Math.round(n));
-            };
-            break;
     }
     attr.generateLabelText = function (tick, zero) {
-        return Math.round(conversion(tick.usrCoords[coordIndex + 1] - zero.usrCoords[coordIndex + 1])).toString();
+        var n = Math.round(tick.usrCoords[coordIndex + 1] - zero.usrCoords[coordIndex + 1]);
+        console.log(n);
+        return conversion(n).toString();
     };
     attr.drawLabels = true;
+    attr.majorHeight = json.grid ? -1 : 5;
     board.create("ticks", [axis, calculateSetOff(length)], attr);
     return conversion;
-}
-
-function getScalingFunction(string) {
-    switch (string) {
-        case "log":
-    }
 }
 
 function setOption(json, opts) {
@@ -256,20 +247,18 @@ function setOption(json, opts) {
 
 function getAttr(attr, json, opts, type) {
     var value;
-    if (json[attr] != undefined) value = validateAttr(attr, json[attr], opts, type);
+    if (attr == "coords") value = convertCoords(opts.graphicsComplex ? json["positions"] : json["coords"], opts);
+    else if (json[attr] != undefined) value = validateAttr(attr, json[attr], type);
     else if (opts[attr] != undefined) value = opts[attr];
-    else value = validateAttr(attr, undefined, opts, type);
+    else value = validateAttr(attr, undefined, type);
     return value;
 }
 
-function validateAttr(attr, value, opts, type) {
+function validateAttr(attr, value, type) {
     switch (attr) {
         case "color":
             if (value == undefined) value = [0.0, 0.0, 0.0];
             else value = convertColor(value);
-            break;
-        case "coords":
-            value = convertCoords(value, opts);
             break;
         case "opacity":
             if (value == undefined) value = 1.0;
@@ -304,6 +293,7 @@ function getArgs(lst, json, opts, type) {
 }
 
 function drawPoint(board, args) {
+    var fillingCoord, infiniteLength;
     for (coord of args.coords) {
         board.create("point", coord, {
             strokeColor: args.color,
@@ -313,6 +303,30 @@ function drawPoint(board, args) {
             fixed: true,
             name: "",
             size: (board.canvasWidth * args.pointSize) / 2,
+        });
+        switch (args.filling) {
+            case "top":
+                fillingCoord = [coord[0], coord[1] + 1];
+                infiniteLength = true;
+                break;
+            case "bottom":
+                fillingCoord = [coord[0], coord[1] - 1];
+                infiniteLength = true;
+                break;
+            case "mid":
+                fillingCoord = [coord[0], 0];
+                infiniteLength = false;
+                break;
+            default:
+                continue;
+        }
+        board.create("line", [coord, fillingCoord], {
+            strokeColor: args.color,
+            straightFirst: false,
+            straightLast: infiniteLength,
+            strokeOpacity: args.opacity,
+            fixed: true,
+            filled: true,
         });
     }
 }
@@ -342,14 +356,42 @@ function drawLineSegmented(board, args) {
 
 function drawLine(board, args) {
     //TODO: additional directives: width, dashed, gap
-    var newCoords = convertCoordsCurve(args.coords);
+    //debugger
+    var newCoords = convertCoordsCurve(args.coords),
+        inverted = true,
+        xCopy,
+        yCopy,
+        coordCopy,
+        curve = board.create("curve", newCoords, {
+            lastArrow: args.arrow,
+            strokeColor: args.color,
+            strokeOpacity: args.opacity,
+            strokeWidth: (board.canvasWidth * args.thickness) / 2,
+        });
+    switch (args.filling) {
+        case "bottom":
+            inverted = false;
+        case "top":
+            //FIXME: inequality not possible
+            //board.create("inequality", [curve], { fillColor: args.color, opacity: args.opacity, inverted: inverted });
+            break;
+        case "mid":
+            xCopy = [...newCoords[0]];
+            yCopy = [...newCoords[1]];
+            coordCopy = [xCopy, yCopy];
+            coordCopy[0].push(coordCopy[0][coordCopy[0].length - 1]);
+            coordCopy[0].unshift(coordCopy[0][0]);
+            coordCopy[1].push(0);
+            coordCopy[1].unshift(0);
 
-    board.create("curve", newCoords, {
-        lastArrow: args.arrow,
-        strokeColor: args.color,
-        strokeOpacity: args.opacity,
-        strokeWidth: (board.canvasWidth * args.thickness) / 2,
-    });
+            board.create("curve", coordCopy, {
+                strokeOpacity: 0.0,
+                fillColor: args.color,
+                fillOpacity: args.opacity,
+                highlightStrokeColorOpacity: 0.0,
+            });
+            break;
+    }
 }
 
 function drawPolygon(board, args) {
@@ -515,7 +557,7 @@ function testRun() {
                 data: [
                     {
                         type: "polygon",
-                        coords: [1, 2, 3, 4],
+                        positions: [1, 2, 3, 4],
                     },
                 ],
             },
@@ -527,7 +569,8 @@ function testRun() {
             ymax: 15.0,
         },
         axes: {
-            hasaxes: false,
+            hasaxes: [true, true],
+            grid: false
         },
         aspectRatio: {
             symbol: "automatic",
@@ -590,17 +633,19 @@ function testRun() {
                 angle2: 2.35619449019234,
                 coords: [[[0.0, 5.0]]],
             },
+            { option: "filling", value: "top" },
             {
                 type: "line",
                 color: [1.0, 0.5, 0.0],
                 opacity: 0.6,
-                coords: [[[1.0, 1.0]], [[3.0, 1.0]], [[4.0, 3.0]], [[4.0, 7.0]]],
+                coords: [[[1.0, 1.0]], [[3.0, 1.0]], [[4.0, 3.0]], [[5.0, 7.0]]],
                 thickness: 0.01,
             },
+            { option: "filling", value: "top" },
             {
                 type: "point",
                 color: [0.7, 1.0, 0.0],
-                coords: [[[0, 0]], [[1, 1]], [[2, 2]], [[3, 3]]],
+                coords: [[[0, 0]], [[1, 1]], [[2, 2]], [[3.5, 3.5]]],
                 opacity: 0.5,
                 pointSize: 0.005,
             },
@@ -624,6 +669,7 @@ function testRun() {
                 coords: [[[-1.0, -1.0]], [[0.0, -1.0]], [[-4.0, -4.0]], [[-1.0, 0.0]]],
             },
             { option: "pointSize", value: 0.01 },
+            { option: "filling", value: "none" },
             { option: "color", value: [1, 0, 1] },
             {
                 type: "point",
@@ -640,6 +686,72 @@ function testRun() {
             },
         ],
         extent: { xmin: -9.0, xmax: 9.0, ymin: -9.0, ymax: 9.0 },
-        axes: { hasaxes: [true, true], scaling: ["None", "Log10"] },
+        axes: { hasaxes: [true, true], scaling: ["none", "log10"] },
     });
+    /*
+    drawGraphics2d("graphics2d", {
+        axes: {
+            hasaxes: false,
+        },
+        elements: [
+            {
+                option: "opacity",
+                value: 1.0,
+            },
+            {
+                option: "pointSize",
+                value: 0.0013,
+            },
+            {
+                option: "textSize",
+                value: 12,
+            },
+            {
+                option: "fontSize",
+                value: 12,
+            },
+            {
+                option: "color",
+                value: [0.0, 0.0, 0.0],
+            },
+            {
+                aspectRatio: {
+                    symbol: "automatic",
+                },
+            },
+            {
+                type: "graphicscomplex",
+                coords: [[[0.0, 0.0]], [[2.0, 0.0]], [[2.0, 2.0]], [[0.0, 2.0]]],
+                data: [
+                    {
+                        type: "circle",
+                        color: [0.0, 0.0, 0.0],
+                        positions: [1],
+                    },
+                    {
+                        type: "circle",
+                        color: [0.0, 0.0, 0.0],
+                        positions: [2],
+                    },
+                    {
+                        type: "circle",
+                        color: [0.0, 0.0, 0.0],
+                        positions: [3],
+                    },
+                    {
+                        type: "circle",
+                        color: [0.0, 0.0, 0.0],
+                        positions: [4],
+                    },
+                ],
+            },
+        ],
+        extent: {
+            xmin: 0.0,
+            xmax: 2.0,
+            ymin: 0.0,
+            ymax: 2.0,
+        },
+    });
+    */
 }
