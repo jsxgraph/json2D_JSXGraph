@@ -1,7 +1,7 @@
 //TODO: top/bottom with inequality
 
 //TODO: documentation in md
-function generateGraphics2dDiv(json, maxWidth, maxHeight) {
+function createGraphics2dDiv(json, maxWidth, maxHeight) {
     var json2dDiv, maxRatio, givenRatio, width, height;
     json2dDiv = document.createElement("div");
     maxRatio = maxHeight / maxWidth;
