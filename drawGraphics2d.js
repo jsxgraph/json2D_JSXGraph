@@ -373,11 +373,12 @@ function drawLine(board, args) {
     switch (args.filling) {
         case "bottom":
             //yTarget = board.boundingbox[1];
-            yTarget = 0;
+            //yTarget = function(){return board.getBoundingBox()[3]};
+            yTarget = board.getBoundingBox()[3];
             break;
         case "top":
             //yTarget = board.boundingbox[1];
-            yTarget = 0;
+            yTarget = board.getBoundingBox()[1];
             break;
         case "mid":
             yTarget = 0;
@@ -647,7 +648,7 @@ function testRun() {
                 coords: [[[0.0, 0.0]], [[-4.0, 3.0]]],
                 thickness: 0.02,
             },
-            { option: "filling", value: "bottom" },
+            { option: "filling", value: "mid" },
             {
                 type: "line",
                 color: [1.0, 0.5, 0.0],
