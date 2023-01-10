@@ -1,4 +1,4 @@
-//TODO: top/bottom with inequality
+//TODO: top/bottom with dynamic points
 
 //TODO: documentation in md
 function createGraphics2dDiv(json, maxWidth, maxHeight) {
@@ -168,6 +168,7 @@ function drawAxes(board, json, extent) {
     conversionY = function (n) {
         return n;
     };
+    attr.fixed = true;
     if (json === undefined || json.hasaxes === true) return;
 
     if (json.hasaxes[0]) {
@@ -232,11 +233,11 @@ function drawTicks(board, axis, json, length, index) {
     }
     attr.generateLabelText = function (tick, zero) {
         var n = Math.round(tick.usrCoords[coordIndex + 1] - zero.usrCoords[coordIndex + 1]);
-        console.log(n);
         return conversion(n).toString();
     };
     attr.drawLabels = true;
     attr.majorHeight = json.grid ? -1 : 5;
+    attr.fixed = true;
     board.create("ticks", [axis, calculateSetOff(length)], attr);
     return conversion;
 }
@@ -361,6 +362,7 @@ function drawLine(board, args) {
         inverted = true,
         xCopy,
         yCopy,
+        yTarget,
         coordCopy,
         curve = board.create("curve", newCoords, {
             lastArrow: args.arrow,
@@ -370,28 +372,33 @@ function drawLine(board, args) {
         });
     switch (args.filling) {
         case "bottom":
-            inverted = false;
+            //yTarget = board.boundingbox[1];
+            yTarget = 0;
+            break;
         case "top":
-            //FIXME: inequality not possible
-            //board.create("inequality", [curve], { fillColor: args.color, opacity: args.opacity, inverted: inverted });
+            //yTarget = board.boundingbox[1];
+            yTarget = 0;
             break;
         case "mid":
-            xCopy = [...newCoords[0]];
-            yCopy = [...newCoords[1]];
-            coordCopy = [xCopy, yCopy];
-            coordCopy[0].push(coordCopy[0][coordCopy[0].length - 1]);
-            coordCopy[0].unshift(coordCopy[0][0]);
-            coordCopy[1].push(0);
-            coordCopy[1].unshift(0);
-
-            board.create("curve", coordCopy, {
-                strokeOpacity: 0.0,
-                fillColor: args.color,
-                fillOpacity: args.opacity,
-                highlightStrokeColorOpacity: 0.0,
-            });
+            yTarget = 0;
             break;
+        default:
+            return;
     }
+    xCopy = [...newCoords[0]];
+    yCopy = [...newCoords[1]];
+    coordCopy = [xCopy, yCopy];
+    coordCopy[0].push(coordCopy[0][coordCopy[0].length - 1]);
+    coordCopy[0].unshift(coordCopy[0][0]);
+    coordCopy[1].push(yTarget);
+    coordCopy[1].unshift(yTarget);
+
+    board.create("curve", coordCopy, {
+        strokeOpacity: 0.0,
+        fillColor: args.color,
+        fillOpacity: args.opacity,
+        highlightStrokeColorOpacity: 0.0,
+    });
 }
 
 function drawPolygon(board, args) {
@@ -633,7 +640,14 @@ function testRun() {
                 angle2: 2.35619449019234,
                 coords: [[[0.0, 5.0]]],
             },
-            { option: "filling", value: "top" },
+            {
+                type: "arrow",
+                color: [0.2, 0.0, 1.0],
+                opacity: 1.0,
+                coords: [[[0.0, 0.0]], [[-4.0, 3.0]]],
+                thickness: 0.02,
+            },
+            { option: "filling", value: "bottom" },
             {
                 type: "line",
                 color: [1.0, 0.5, 0.0],
@@ -656,13 +670,6 @@ function testRun() {
                 coords: [[[2.0, -5.0]], [[4.0, -2.0]]],
             },
             {
-                type: "arrow",
-                color: [0.2, 0.0, 1.0],
-                opacity: 1.0,
-                coords: [[[0.0, 0.0]], [[-4.0, 3.0]]],
-                thickness: 0.02,
-            },
-            {
                 type: "polygon",
                 color: [1.0, 0.5, 0.0],
                 opacity: 1.0,
@@ -682,13 +689,74 @@ function testRun() {
                 fontSize: 40,
                 opacity: 0.8,
                 coords: [[[-5, -5]], [[5, 5]]],
-                texts: ["Bottom left", "Top right"],
+                texts: ["Bottom left", "Top kek"],
             },
         ],
         extent: { xmin: -9.0, xmax: 9.0, ymin: -9.0, ymax: 9.0 },
         axes: { hasaxes: [true, true], scaling: ["none", "log10"] },
     });
     /*
+    drawGraphics2d("graphics2d", {
+  "axes": {
+    "hasaxes": false
+  },
+  "elements": [{
+    "option": "opacity",
+    "value": 1.0
+  }, {
+    "option": "pointSize",
+    "value": 0.0013
+  }, {
+    "option": "textSize",
+    "value": 12
+  }, {
+    "option": "fontSize",
+    "value": 12
+  }, {
+    "option": "color",
+    "value": [0.0, 0.0, 0.0]
+  }, {
+    "aspectRatio": {
+      "symbol": "automatic"
+    }
+  }, {
+    "type": "graphicscomplex",
+    "coords": [
+      [
+        [15.0, 0.0]
+      ],
+      [
+        [-12.135254915624213, 8.816778784387097]
+      ],
+      [
+        [4.635254915624212, -14.265847744427303]
+      ],
+      [
+        [4.635254915624212, 14.265847744427303]
+      ],
+      [
+        [-12.135254915624213, -8.816778784387097]
+      ],
+      [
+        [15.0, 0.0]
+      ]
+    ],
+    "data": [{
+      "type": "line",
+      "positions": [1, 2, 3, 4, 5, 6]
+    }, {
+      "type": "point",
+      "positions": [1, 2, 3, 4, 5]
+    }]
+  }],
+  "extent": {
+    "xmin": -12.135254915624213,
+    "xmax": 15.0,
+    "ymin": -14.265847744427303,
+    "ymax": 14.265847744427303
+  }
+});
+
     drawGraphics2d("graphics2d", {
         axes: {
             hasaxes: false,
@@ -701,10 +769,6 @@ function testRun() {
             {
                 option: "pointSize",
                 value: 0.0013,
-            },
-            {
-                option: "textSize",
-                value: 12,
             },
             {
                 option: "fontSize",
