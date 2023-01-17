@@ -27,7 +27,8 @@ function createGraphics2dDiv(json, maxWidth, maxHeight) {
             givenRatio =
                 json.extent === undefined
                     ? 1
-                    : (json.extent.ymax - json.extent.ymin) / (json.extent.xmax - json.extent.xmin);
+                    : (json.extent.ymax - json.extent.ymin) /
+                      (json.extent.xmax - json.extent.xmin);
             // width dominates
             if (givenRatio < maxRatio) {
                 width = maxWidth;
@@ -79,8 +80,14 @@ function drawGraphics2d(id, json) {
     };
     JXG.Options = JXG.merge(JXG.Options, myoptions);
 
-    extent = json.extent === undefined ? { xmin: -9.0, xmax: 9.0, ymin: -9.0, ymax: 9.0 } : json.extent;
-    axes = json.axes === undefined ? { hasaxes: false, scaling: ["None", "None"], grid: false } : json.axes;
+    extent =
+        json.extent === undefined
+            ? { xmin: -9.0, xmax: 9.0, ymin: -9.0, ymax: 9.0 }
+            : json.extent;
+    axes =
+        json.axes === undefined
+            ? { hasaxes: false, scaling: ["None", "None"], grid: false }
+            : json.axes;
     grid = json.axes.grid ? -1 : 5;
 
     board = JXG.JSXGraph.initBoard(id, {
@@ -110,18 +117,37 @@ function drawGraphic(board, json, opts) {
 
     switch (json.type) {
         case "point":
-            args = getArgs(["coords", "color", "opacity", "filling", "pointSize"], json, opts, json.type);
+            args = getArgs(
+                ["coords", "color", "opacity", "filling", "pointSize"],
+                json,
+                opts,
+                json.type
+            );
             drawPoint(board, args);
             break;
         case "arrow":
         case "line":
-            args = getArgs(["coords", "color", "opacity", "filling", "arrow", "thickness"], json, opts, json.type);
+            args = getArgs(
+                ["coords", "color", "opacity", "filling", "arrow", "thickness"],
+                json,
+                opts,
+                json.type
+            );
             drawLine(board, args);
             break;
         case "disk":
         case "circle":
             args = getArgs(
-                ["coords", "color", "opacity", "radius1", "radius2", "angle1", "angle2", "filled"],
+                [
+                    "coords",
+                    "color",
+                    "opacity",
+                    "radius1",
+                    "radius2",
+                    "angle1",
+                    "angle2",
+                    "filled",
+                ],
                 json,
                 opts,
                 json.type
@@ -129,15 +155,30 @@ function drawGraphic(board, json, opts) {
             drawCircle(board, args);
             break;
         case "rectangle":
-            args = getArgs(["coords", "color", "opacity"], json, opts, json.type);
+            args = getArgs(
+                ["coords", "color", "opacity"],
+                json,
+                opts,
+                json.type
+            );
             drawRectangle(board, args);
             break;
         case "polygon":
-            args = getArgs(["coords", "color", "opacity"], json, opts, json.type);
+            args = getArgs(
+                ["coords", "color", "opacity"],
+                json,
+                opts,
+                json.type
+            );
             drawPolygon(board, args);
             break;
         case "text":
-            args = getArgs(["coords", "color", "opacity", "texts", "fontSize"], json, opts, json.type);
+            args = getArgs(
+                ["coords", "color", "opacity", "texts", "fontSize"],
+                json,
+                opts,
+                json.type
+            );
             drawText(board, args);
             break;
         case "graphicscomplex":
@@ -180,7 +221,13 @@ function drawAxes(board, json, extent) {
             ],
             attr
         );
-        conversionX = drawTicks(board, xAxis, json, extent.xmax - extent.xmin, false);
+        conversionX = drawTicks(
+            board,
+            xAxis,
+            json,
+            extent.xmax - extent.xmin,
+            false
+        );
     }
 
     if (json.hasaxes[1]) {
@@ -192,17 +239,28 @@ function drawAxes(board, json, extent) {
             ],
             attr
         );
-        conversionY = drawTicks(board, yAxis, json, extent.ymax - extent.ymin, extent, true);
+        conversionY = drawTicks(
+            board,
+            yAxis,
+            json,
+            extent.ymax - extent.ymin,
+            extent,
+            true
+        );
     }
 
     if (json.hasaxes[0] || json.hasaxes[1])
         board.highlightInfobox = function (x, y, el) {
-            this.infobox.setText("(" + conversionX(x) + ", " + conversionY(y) + ")");
+            this.infobox.setText(
+                "(" + conversionX(x) + ", " + conversionY(y) + ")"
+            );
         };
 }
 
 function drawTicks(board, axis, json, length, index) {
-    var attr = index ? JXG.Options.board.defaultAxes.y.ticks : JXG.Options.board.defaultAxes.x.ticks,
+    var attr = index
+            ? JXG.Options.board.defaultAxes.y.ticks
+            : JXG.Options.board.defaultAxes.x.ticks,
         conversion,
         scaling = json.scaling === undefined ? ["None", "None"] : json.scaling,
         coordIndex = index ? 1 : 0;
@@ -216,7 +274,7 @@ function drawTicks(board, axis, json, length, index) {
         case "log2":
             attr.drawZero = false;
             conversion = function (n) {
-                return Math.pow(2,n);
+                return Math.pow(2, n);
             };
             break;
         case "log10":
@@ -232,7 +290,9 @@ function drawTicks(board, axis, json, length, index) {
             break;
     }
     attr.generateLabelText = function (tick, zero) {
-        var n = Math.round(tick.usrCoords[coordIndex + 1] - zero.usrCoords[coordIndex + 1]);
+        var n = Math.round(
+            tick.usrCoords[coordIndex + 1] - zero.usrCoords[coordIndex + 1]
+        );
         return conversion(n).toString();
     };
     attr.drawLabels = true;
@@ -248,8 +308,13 @@ function setOption(json, opts) {
 
 function getAttr(attr, json, opts, type) {
     var value;
-    if (attr == "coords") value = convertCoords(opts.graphicsComplex ? json["positions"] : json["coords"], opts);
-    else if (json[attr] != undefined) value = validateAttr(attr, json[attr], type);
+    if (attr == "coords")
+        value = convertCoords(
+            opts.graphicsComplex ? json["positions"] : json["coords"],
+            opts
+        );
+    else if (json[attr] != undefined)
+        value = validateAttr(attr, json[attr], type);
     else if (opts[attr] != undefined) value = opts[attr];
     else value = validateAttr(attr, undefined, type);
     return value;
@@ -336,12 +401,16 @@ function drawCircle(board, args) {
     for (coord of args.coords) {
         // calculate the foci of the ellipse
         var foci = calculateFoci(args.radius1, args.radius2, coord);
-        board.create("ellipse", [foci[0], foci[1], foci[2], args.angle1, args.angle2], {
-            strokeColor: args.color,
-            fillColor: args.color,
-            strokeOpacity: args.opacity,
-            fillOpacity: args.opacity * args.filled,
-        });
+        board.create(
+            "ellipse",
+            [foci[0], foci[1], foci[2], args.angle1, args.angle2],
+            {
+                strokeColor: args.color,
+                fillColor: args.color,
+                strokeOpacity: args.opacity,
+                fillOpacity: args.opacity * args.filled,
+            }
+        );
     }
 }
 
@@ -356,14 +425,13 @@ function drawLineSegmented(board, args) {
 }
 
 function drawLine(board, args) {
-    //TODO: additional directives: width, dashed, gap
-    //debugger
     var newCoords = convertCoordsCurve(args.coords),
         inverted = true,
         xCopy,
         yCopy,
         yTarget,
         coordCopy,
+        filling,
         curve = board.create("curve", newCoords, {
             lastArrow: args.arrow,
             strokeColor: args.color,
@@ -371,14 +439,11 @@ function drawLine(board, args) {
             strokeWidth: (board.canvasWidth * args.thickness) / 2,
         });
     switch (args.filling) {
-        case "bottom":
-            //yTarget = board.boundingbox[1];
-            //yTarget = function(){return board.getBoundingBox()[3]};
-            yTarget = board.getBoundingBox()[3];
-            break;
         case "top":
-            //yTarget = board.boundingbox[1];
             yTarget = board.getBoundingBox()[1];
+            break;
+        case "bottom":
+            yTarget = board.getBoundingBox()[3];
             break;
         case "mid":
             yTarget = 0;
@@ -394,12 +459,33 @@ function drawLine(board, args) {
     coordCopy[1].push(yTarget);
     coordCopy[1].unshift(yTarget);
 
-    board.create("curve", coordCopy, {
+    filling = board.create("curve", coordCopy, {
         strokeOpacity: 0.0,
         fillColor: args.color,
         fillOpacity: args.opacity,
         highlightStrokeColorOpacity: 0.0,
     });
+
+    filling.updateDataArray = function () {
+        var yTarget,
+            boundingbox = board.getBoundingBox();
+        this.dataY.shift();
+        this.dataY.pop();
+        switch (args.filling) {
+            case "top":
+                yTarget = boundingbox[1];
+                break;
+            case "bottom":
+                yTarget = boundingbox[3];
+                break;
+            case "mid":
+                yTarget = 0;
+                break;
+        }
+        this.dataY.push(yTarget);
+        this.dataY.unshift(yTarget);
+    };
+    board.update();
 }
 
 function drawPolygon(board, args) {
@@ -414,12 +500,16 @@ function drawPolygon(board, args) {
 
 function drawText(board, args) {
     for (index in args.coords) {
-        board.create("text", [args.coords[index][0], args.coords[index][1], args.texts[index]], {
-            color: args.color,
-            fixed: true,
-            opacity: args.opacity,
-            fontSize: args.fontSize,
-        });
+        board.create(
+            "text",
+            [args.coords[index][0], args.coords[index][1], args.texts[index]],
+            {
+                color: args.color,
+                fixed: true,
+                opacity: args.opacity,
+                fontSize: args.fontSize,
+            }
+        );
     }
 }
 
@@ -507,8 +597,12 @@ function convertCoords(coords, opts) {
         key = opts.graphicsComplex ? coords[index] - 1 : index;
         if (target[key][0] != null) newCoords[index] = target[key][0];
         else {
-            x = opts.extent.xmin + target[key][1][0] * (opts.extent.xmax - opts.extent.xmin);
-            y = opts.extent.ymin + target[key][1][1] * (opts.extent.ymax - opts.extent.ymin);
+            x =
+                opts.extent.xmin +
+                target[key][1][0] * (opts.extent.xmax - opts.extent.xmin);
+            y =
+                opts.extent.ymin +
+                target[key][1][1] * (opts.extent.ymax - opts.extent.ymin);
             newCoords[index] = [x, y];
         }
     }
@@ -648,12 +742,17 @@ function testRun() {
                 coords: [[[0.0, 0.0]], [[-4.0, 3.0]]],
                 thickness: 0.02,
             },
-            { option: "filling", value: "mid" },
+            { option: "filling", value: "bottom" },
             {
                 type: "line",
                 color: [1.0, 0.5, 0.0],
                 opacity: 0.6,
-                coords: [[[1.0, 1.0]], [[3.0, 1.0]], [[4.0, 3.0]], [[5.0, 7.0]]],
+                coords: [
+                    [[1.0, 1.0]],
+                    [[3.0, 1.0]],
+                    [[4.0, 3.0]],
+                    [[5.0, 7.0]],
+                ],
                 thickness: 0.01,
             },
             { option: "filling", value: "top" },
@@ -674,7 +773,12 @@ function testRun() {
                 type: "polygon",
                 color: [1.0, 0.5, 0.0],
                 opacity: 1.0,
-                coords: [[[-1.0, -1.0]], [[0.0, -1.0]], [[-4.0, -4.0]], [[-1.0, 0.0]]],
+                coords: [
+                    [[-1.0, -1.0]],
+                    [[0.0, -1.0]],
+                    [[-4.0, -4.0]],
+                    [[-1.0, 0.0]],
+                ],
             },
             { option: "pointSize", value: 0.01 },
             { option: "filling", value: "none" },
