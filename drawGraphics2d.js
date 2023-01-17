@@ -742,7 +742,7 @@ function testRun() {
                 coords: [[[0.0, 0.0]], [[-4.0, 3.0]]],
                 thickness: 0.02,
             },
-            { option: "filling", value: "bottom" },
+            { option: "filling", value: "mid" },
             {
                 type: "line",
                 color: [1.0, 0.5, 0.0],
