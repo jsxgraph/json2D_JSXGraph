@@ -8,31 +8,42 @@ These are the Graphic Objects, that can be drawn. More information about unexpla
 - 'color' (type: double[3])
 - 'opacity' (type: double)
 - 'filling' (type: String)
-# Examples
+# Example
 
 ## Circle
 - 'coords' (type: double[][][2]) Coordinates of the middle points of the circles
 - 'color' (type: double[3])
 - 'opacity' (type: double)
-- 'radius1' (type: double)
+- 'radius1' (type: double) Radius for the x-axis
+- 'radius2' (type: double) Radius for the y-axis
+- 'angle1' (type: double) Starting angle, from which the circle should be drawn, given in radians
+- 'angle2' (type: double) Ending angle, until which the circle should be drawn, given in radians
 # Properties
 
-# Examples
+# Example
 
 ## Disk
+Same as a circle, but filled
 # Properties
+- 'coords' (type: double[][][2]) Coordinates of the middle points of the circles
+- 'color' (type: double[3])
+- 'opacity' (type: double)
+- 'radius1' (type: double) Radius for the x-axis
+- 'radius2' (type: double) Radius for the y-axis
+- 'angle1' (type: double) Starting angle, from which the circle should be drawn, given in radians
+- 'angle2' (type: double) Ending angle, until which the circle should be drawn, given in radians
 
-# Examples
+# Example
 
 ## Line
 # Properties
-- 'coords' (type: double[][][2]) The line goes through all coordinates, arrow head pointing to the last coordinate
+- 'coords' (type: double[][][2]) The line goes through all coordinates
 - 'color' (type: double[3])
 - 'opacity' (type: double)
 - 'filling' (type: String)
 - 'thickness' (type: double)
 
-# Examples
+# Example
 
 ## Arrow 
 # Properties
@@ -42,7 +53,7 @@ These are the Graphic Objects, that can be drawn. More information about unexpla
 - 'filling' (type: String)
 - 'thickness' (type: double)
 
-# Examples
+# Example
 
 ## Polygon
 - 'coords' (type: double[][][2]) The polygon goes through all coordinates in the given order
@@ -50,7 +61,7 @@ These are the Graphic Objects, that can be drawn. More information about unexpla
 - 'opacity' (type: double)
 # Properties
 
-# Examples
+# Example
 
 ## Rectangle
 - 'coords' (type: double[2][][2]) The bottom left and top right coordinates of the rectangle 
@@ -58,7 +69,7 @@ These are the Graphic Objects, that can be drawn. More information about unexpla
 - 'opacity' (type: double)
 # Properties
 
-# Examples
+# Example
 
 ## Text
 # Properties
@@ -68,16 +79,49 @@ These are the Graphic Objects, that can be drawn. More information about unexpla
 - 'texts' (type: String[]) Array of texts to be rendered
 - 'fontSize' (type: int) How large the text should be in pixels
 
-# Examples
+# Example
 
 ## Graphics Complex
-This is not technically a graphic object. However, this construct can be used to simplify multiple graphic objects with repeating coordinates.
+This is not technically a graphic object. However, this construct can be used to simplify multiple graphic objects with repeating coordinates. The coordinates of elements contained in the graphics complex are being set with the attribute 'positions' instead of 'coords', which uses indices to access the coordinates stored in the graphics complex primitive
 # Properties
-
-# Examples
+- 'coords' (type: double[][][2]) Array of all coordinates used within the graphics complex
+- 'data' (type: json) Json with all the primitives contained within the graphics complex
+# Example
+`{
+    "type": "graphicscomplex",
+    "coords": [
+      [
+        [15.0, 0.0]
+      ],
+      [
+        [-12.135254915624213, 8.816778784387097]
+      ],
+      [
+        [4.635254915624212, -14.265847744427303]
+      ],
+      [
+        [4.635254915624212, 14.265847744427303]
+      ],
+      [
+        [-12.135254915624213, -8.816778784387097]
+      ],
+      [
+        [15.0, 0.0]
+      ]
+    ],
+    "data": [{
+      "type": "line",
+      "positions": [1, 2, 3, 4, 5, 6]
+    }, {
+      "type": "point",
+      "positions": [1, 2, 3, 4, 5]
+    }]
+  }`
 
 ## Option
 This is not technically a graphic object. However, this construct can be used to simplify multiple graphic objects with repeating properties. When a property is set with an option, it is used for all following primitives, which use that property, unless it is locally overwritten by that primitive. 
 # Properties
+- 'option' (type: String) Name of the attribute, the option is set for
+- 'value' (type: *) Value for the given attribute
 
-# Examples
+# Example
