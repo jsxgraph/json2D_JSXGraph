@@ -84,14 +84,13 @@ function drawGraphics2d(id, json) {
             : json.extent;
     axes =
         json.axes === undefined
-            ? { hasaxes: false, scaling: ["None", "None"], grid: false }
+            ? { hasaxes: false, scaling: undefined, grid: false }
             : json.axes;
     grid = json.axes.grid ? -1 : 5;
 
     board = JXG.JSXGraph.initBoard(id, {
         boundingbox: [extent.xmin, extent.ymax, extent.xmax, extent.ymin],
-        //axis: json.axes.hasaxes,
-        axis: json.axes.hasaxes === true,
+        axis: ((json.hasaxes === true || json.hasaxes === [true,true]) && (json.scaling === undefined || json.scaling === ["none,none"])),
         defaultAxes: {
             x: { ticks: { visible: true, majorHeight: grid } },
             y: { ticks: { visible: true, majorHeight: grid } },
@@ -208,9 +207,9 @@ function drawAxes(board, json, extent) {
         return n;
     };
     attr.fixed = true;
-    if (json === undefined || json.hasaxes === true) return;
+    if ((json.hasaxes === true || json.hasaxes === [true,true]) && (json.scaling === undefined || json.scaling === ["none,none"])) return;
 
-    if (json.hasaxes[0]) {
+    if (json.hasaxes || json.hasaxes[0]) {
         var xAxis = board.create(
             "line",
             [
@@ -228,7 +227,7 @@ function drawAxes(board, json, extent) {
         );
     }
 
-    if (json.hasaxes[1]) {
+    if (json.hasaxes || json.hasaxes[1]) {
         var yAxis = board.create(
             "line",
             [
@@ -260,7 +259,7 @@ function drawTicks(board, axis, json, length, index) {
             ? JXG.Options.board.defaultAxes.y.ticks
             : JXG.Options.board.defaultAxes.x.ticks,
         conversion,
-        scaling = json.scaling === undefined ? ["None", "None"] : json.scaling,
+        scaling = json.scaling === undefined ? ["none", "none"] : json.scaling,
         coordIndex = index ? 1 : 0;
     switch (scaling[coordIndex]) {
         case "log":
@@ -824,7 +823,7 @@ function testRun() {
                 ],
             },
             { option: "pointSize", value: 0.01 },
-            { option: "filling", value: "none" },
+            { option: "filling", value: "axis" },
             { option: "color", value: [1, 0, 1] },
             {
                 type: "point",
@@ -841,7 +840,7 @@ function testRun() {
             },
         ],
         extent: { xmin: -9.0, xmax: 9.0, ymin: -9.0, ymax: 9.0 },
-        axes: { hasaxes: [true, true], scaling: ["none", "log10"] },
+        axes: { hasaxes: true, scaling: ["none", "log10"] },
     });
     /*
     drawGraphics2d("graphics2d", {
