@@ -1,5 +1,3 @@
-//TODO: top/bottom with dynamic points
-
 //TODO: documentation in md
 function createGraphics2dDiv(json, maxWidth, maxHeight) {
     var json2dDiv, maxRatio, givenRatio, width, height;
@@ -359,7 +357,7 @@ function getArgs(lst, json, opts, type) {
 }
 
 function drawPoint(board, args) {
-    var fillingCoord, infiniteLength;
+    var fillingCoord, infiniteLength, max, min;
     for (coord of args.coords) {
         board.create("point", coord, {
             strokeColor: args.color,
@@ -370,30 +368,50 @@ function drawPoint(board, args) {
             name: "",
             size: (board.canvasWidth * args.pointSize) / 2,
         });
-        switch (args.filling) {
-            case "top":
-                fillingCoord = [coord[0], coord[1] + 1];
-                infiniteLength = true;
-                break;
-            case "bottom":
-                fillingCoord = [coord[0], coord[1] - 1];
-                infiniteLength = true;
-                break;
-            case "mid":
-                fillingCoord = [coord[0], 0];
-                infiniteLength = false;
-                break;
-            default:
-                continue;
+    }
+    if(args.filling){
+        for (coord of args.coords) {
+            if(max == undefined){
+                max = coord[1];
+                min = coord[1];
+            }
+            if(coord[1] > max) max = coord[1];
+            if(coord[1] < min) min = coord[1];
         }
-        board.create("line", [coord, fillingCoord], {
-            strokeColor: args.color,
-            straightFirst: false,
-            straightLast: infiniteLength,
-            strokeOpacity: args.opacity,
-            fixed: true,
-            filled: true,
-        });
+        for (coord of args.coords) {
+            switch (args.filling) {
+                case "+infinity":
+                    fillingCoord = [coord[0], coord[1] + 1];
+                    infiniteLength = true;
+                    break;
+                case "-infinity":
+                    fillingCoord = [coord[0], coord[1] - 1];
+                    infiniteLength = true;
+                    break;
+                case "top":
+                    fillingCoord = [coord[0], max];
+                    infiniteLength = false;
+                    break;
+                case "bottom":
+                    fillingCoord = [coord[0], min];
+                    infiniteLength = false;
+                    break;
+                case "axis":
+                    fillingCoord = [coord[0], 0];
+                    infiniteLength = false;
+                    break;
+                default:
+                    continue;
+            }
+            board.create("line", [coord, fillingCoord], {
+                strokeColor: args.color,
+                straightFirst: false,
+                straightLast: infiniteLength,
+                strokeOpacity: args.opacity,
+                fixed: true,
+                filled: true,
+            });
+        }
     }
 }
 
@@ -432,20 +450,38 @@ function drawLine(board, args) {
         yTarget,
         coordCopy,
         filling,
+        max,
+        min,
         curve = board.create("curve", newCoords, {
             lastArrow: args.arrow,
             strokeColor: args.color,
             strokeOpacity: args.opacity,
             strokeWidth: (board.canvasWidth * args.thickness) / 2,
         });
+
+    if(!args.filling) return;
+    for (yCoord of newCoords[1]) {
+        if(max == undefined){
+            max = yCoord;
+            min = yCoord;
+        }
+        if(yCoord > max) max = yCoord;
+        if(yCoord < min) min = yCoord;
+    }
     switch (args.filling) {
-        case "top":
+        case "+infinity":
             yTarget = board.getBoundingBox()[1];
             break;
-        case "bottom":
+        case "-infinity":
             yTarget = board.getBoundingBox()[3];
             break;
-        case "mid":
+        case "top":
+            yTarget = max;
+            break;
+        case "bottom":
+            yTarget = min;
+            break;
+        case "axis":
             yTarget = 0;
             break;
         default:
@@ -472,13 +508,19 @@ function drawLine(board, args) {
         this.dataY.shift();
         this.dataY.pop();
         switch (args.filling) {
-            case "top":
+            case "+infinity":
                 yTarget = boundingbox[1];
                 break;
-            case "bottom":
+            case "-infinity":
                 yTarget = boundingbox[3];
                 break;
-            case "mid":
+            case "top":
+                yTarget = max;
+                break;
+            case "bottom":
+                yTarget = min;
+                break;
+            case "axis":
                 yTarget = 0;
                 break;
         }
@@ -508,6 +550,7 @@ function drawText(board, args) {
                 fixed: true,
                 opacity: args.opacity,
                 fontSize: args.fontSize,
+                anchorX: "middle"
             }
         );
     }
@@ -742,7 +785,7 @@ function testRun() {
                 coords: [[[0.0, 0.0]], [[-4.0, 3.0]]],
                 thickness: 0.02,
             },
-            { option: "filling", value: "mid" },
+            { option: "filling", value: "axis" },
             {
                 type: "line",
                 color: [1.0, 0.5, 0.0],
@@ -794,7 +837,7 @@ function testRun() {
                 fontSize: 40,
                 opacity: 0.8,
                 coords: [[[-5, -5]], [[5, 5]]],
-                texts: ["Bottom left", "Top kek"],
+                texts: ["Bottom left", "Top right"],
             },
         ],
         extent: { xmin: -9.0, xmax: 9.0, ymin: -9.0, ymax: 9.0 },
