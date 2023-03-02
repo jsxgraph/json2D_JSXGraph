@@ -1,4 +1,5 @@
-//TODO: documentation in md
+//TODO: this could be used to scale the width/height of the graphic, however not finished and not tested
+/*
 function createGraphics2dDiv(json, maxWidth, maxHeight) {
     var json2dDiv, maxRatio, givenRatio, width, height;
     json2dDiv = document.createElement("div");
@@ -50,7 +51,7 @@ function createGraphics2dDiv(json, maxWidth, maxHeight) {
 
     return json2dDiv;
 }
-
+*/
 function drawGraphics2d(id, json) {
     var myoptions, extent, axes, grid, board, opts;
     myoptions = {
@@ -90,7 +91,9 @@ function drawGraphics2d(id, json) {
 
     board = JXG.JSXGraph.initBoard(id, {
         boundingbox: [extent.xmin, extent.ymax, extent.xmax, extent.ymin],
-        axis: ((json.hasaxes === true || json.hasaxes === [true,true]) && (json.scaling === undefined || json.scaling === ["none,none"])),
+        axis:
+            (json.hasaxes === true || json.hasaxes === [true, true]) &&
+            (json.scaling === undefined || json.scaling === ["none,none"]),
         defaultAxes: {
             x: { ticks: { visible: true, majorHeight: grid } },
             y: { ticks: { visible: true, majorHeight: grid } },
@@ -207,7 +210,11 @@ function drawAxes(board, json, extent) {
         return n;
     };
     attr.fixed = true;
-    if ((json.hasaxes === true || json.hasaxes === [true,true]) && (json.scaling === undefined || json.scaling === ["none,none"])) return;
+    if (
+        (json.hasaxes === true || json.hasaxes === [true, true]) &&
+        (json.scaling === undefined || json.scaling === ["none,none"])
+    )
+        return;
 
     if (json.hasaxes || json.hasaxes[0]) {
         var xAxis = board.create(
@@ -368,14 +375,14 @@ function drawPoint(board, args) {
             size: (board.canvasWidth * args.pointSize) / 2,
         });
     }
-    if(args.filling){
+    if (args.filling) {
         for (coord of args.coords) {
-            if(max == undefined){
+            if (max == undefined) {
                 max = coord[1];
                 min = coord[1];
             }
-            if(coord[1] > max) max = coord[1];
-            if(coord[1] < min) min = coord[1];
+            if (coord[1] > max) max = coord[1];
+            if (coord[1] < min) min = coord[1];
         }
         for (coord of args.coords) {
             switch (args.filling) {
@@ -458,14 +465,14 @@ function drawLine(board, args) {
             strokeWidth: (board.canvasWidth * args.thickness) / 2,
         });
 
-    if(!args.filling) return;
+    if (!args.filling) return;
     for (yCoord of newCoords[1]) {
-        if(max == undefined){
+        if (max == undefined) {
             max = yCoord;
             min = yCoord;
         }
-        if(yCoord > max) max = yCoord;
-        if(yCoord < min) min = yCoord;
+        if (yCoord > max) max = yCoord;
+        if (yCoord < min) min = yCoord;
     }
     switch (args.filling) {
         case "+infinity":
@@ -549,7 +556,7 @@ function drawText(board, args) {
                 fixed: true,
                 opacity: args.opacity,
                 fontSize: args.fontSize,
-                anchorX: "middle"
+                anchorX: "middle",
             }
         );
     }
