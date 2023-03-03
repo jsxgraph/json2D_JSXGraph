@@ -73,3 +73,27 @@ Simple example for lines with filling
 	filling: "axis",
 }
 ```
+
+## edgeForm
+### Description
+The edgeForm is a json object, which has the properties color and opacity.
+Those attributes affect the edges of the given graphics object.
+
+### Example
+```
+{
+	type: "polygon",
+	color: [0.0, 0.5, 0.0],
+	opacity: 1.0,
+	coords: [
+		[[-1.0, -1.0]],
+		[[0.0, -1.0]],
+		[[-4.0, -4.0]],
+		[[-1.0, 0.0]],
+	],
+	edgeForm: {
+		color: [1.0, 0.0, 0.0],
+		opacity: 1.0,
+	}
+}
+```

@@ -8,6 +8,7 @@ These are the Graphic Objects, that can be drawn. More information about unexpla
 - 'color' (type: double[3])
 - 'opacity' (type: double)
 - 'filling' (type: String)
+- 'edgeForm' (type: json)
 ### Example
 ```
 {
@@ -28,6 +29,7 @@ These are the Graphic Objects, that can be drawn. More information about unexpla
 - 'radius2' (type: double) Radius for the y-axis
 - 'angle1' (type: double) Starting angle, from which the circle should be drawn, given in radians
 - 'angle2' (type: double) Ending angle, until which the circle should be drawn, given in radians
+- 'edgeForm' (type: json)
 
 ### Example
 ```
@@ -71,6 +73,7 @@ Same as a circle, but filled
 - 'radius2' (type: double) Radius for the y-axis
 - 'angle1' (type: double) Starting angle, from which the circle should be drawn, given in radians
 - 'angle2' (type: double) Ending angle, until which the circle should be drawn, given in radians
+- 'edgeForm' (type: json)
 
 ### Example
 ```
@@ -132,6 +135,7 @@ Same as a circle, but filled
 - 'coords' (type: double[][2][2]) The polygon goes through all coordinates in the given order
 - 'color' (type: double[3])
 - 'opacity' (type: double)
+- 'edgeForm' (type: json)
 
 ### Example
 ```
@@ -153,6 +157,7 @@ Same as a circle, but filled
 - 'coords' (type: double[2][][2]) The bottom left and top right coordinates of the rectangle 
 - 'color' (type: double[3])
 - 'opacity' (type: double)
+- 'edgeForm' (type: json)
 
 ### Example
 ```
