@@ -228,11 +228,11 @@ function drawAxes(board, json, extent) {
     attr.fixed = true;
     if (
         (json.hasaxes === true || json.hasaxes === [true, true]) &&
-        (json.scaling === undefined || json.scaling === ["none,none"])
+        (json.scaling === undefined || json.scaling === ["none","none"])
     )
         return;
 
-    if (json.hasaxes || json.hasaxes[0]) {
+    if (json.hasaxes === true || json.hasaxes[0]) {
         var xAxis = board.create(
             "line",
             [
@@ -250,7 +250,7 @@ function drawAxes(board, json, extent) {
         );
     }
 
-    if (json.hasaxes || json.hasaxes[1]) {
+    if (json.hasaxes === true || json.hasaxes[1]) {
         var yAxis = board.create(
             "line",
             [
@@ -269,7 +269,7 @@ function drawAxes(board, json, extent) {
         );
     }
 
-    if (json.hasaxes || json.hasaxes[0] || json.hasaxes[1])
+    if (json.hasaxes === true || json.hasaxes[0] || json.hasaxes[1])
         board.highlightInfobox = function (x, y, el) {
             this.infobox.setText(
                 "(" + conversionX(x) + ", " + conversionY(y) + ")"
@@ -288,6 +288,7 @@ function drawTicks(board, axis, json, length, index) {
         case "log":
             attr.drawZero = false;
             conversion = function (n) {
+                console.log(n, +Math.exp(n).toFixed(5))
                 //return +Math.exp(n).toFixed(2);
                 return +Math.exp(n).toFixed(5);
             };
@@ -700,6 +701,1478 @@ function calculateSetOff(length) {
 }
 
 function testRun() {
+drawGraphics2d("graphics2d", {
+  "axes": {
+    "hasaxes": [false, false]
+  },
+  "elements": [{
+    "option": "opacity",
+    "value": 1.0
+  }, {
+    "option": "pointSize",
+    "value": 0.0013
+  }, {
+    "option": "fontSize",
+    "value": 12
+  }, {
+    "option": "color",
+    "value": [0.0, 0.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 1.0
+  }, {
+    "aspectRatio": {
+      "symbol": "automatic"
+    }
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.3333333333333335,
+    "radius2": 2.3333333333333335,
+    "coords": [
+      [
+        [6.06217782649107, 3.5]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.08235294117647059, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.3333333333333335,
+    "radius2": 2.3333333333333335,
+    "coords": [
+      [
+        [3.5, 6.06217782649107]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.16862745098039217, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.3333333333333335,
+    "radius2": 2.3333333333333335,
+    "coords": [
+      [
+        [0.0, 7.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.25098039215686274, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.3333333333333335,
+    "radius2": 2.3333333333333335,
+    "coords": [
+      [
+        [-3.5, 6.06217782649107]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.3333333333333333, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.3333333333333335,
+    "radius2": 2.3333333333333335,
+    "coords": [
+      [
+        [-6.06217782649107, 3.5]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.41568627450980394, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.3333333333333335,
+    "radius2": 2.3333333333333335,
+    "coords": [
+      [
+        [-7.0, 0.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.5019607843137255, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.3333333333333335,
+    "radius2": 2.3333333333333335,
+    "coords": [
+      [
+        [-6.06217782649107, -3.5]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.5843137254901961, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.3333333333333335,
+    "radius2": 2.3333333333333335,
+    "coords": [
+      [
+        [-3.5, -6.06217782649107]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.6666666666666666, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.3333333333333335,
+    "radius2": 2.3333333333333335,
+    "coords": [
+      [
+        [0.0, -7.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.7490196078431373, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.3333333333333335,
+    "radius2": 2.3333333333333335,
+    "coords": [
+      [
+        [3.5, -6.06217782649107]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.8352941176470589, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.3333333333333335,
+    "radius2": 2.3333333333333335,
+    "coords": [
+      [
+        [6.06217782649107, -3.5]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.9176470588235294, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.3333333333333335,
+    "radius2": 2.3333333333333335,
+    "coords": [
+      [
+        [7.0, 0.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.8352941176470589, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.0,
+    "radius2": 2.0,
+    "coords": [
+      [
+        [5.196152422706632, 3.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.9176470588235294, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.0,
+    "radius2": 2.0,
+    "coords": [
+      [
+        [3.0, 5.196152422706632]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.0,
+    "radius2": 2.0,
+    "coords": [
+      [
+        [0.0, 6.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.9176470588235294, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.0,
+    "radius2": 2.0,
+    "coords": [
+      [
+        [-3.0, 5.196152422706632]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.8313725490196079, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.0,
+    "radius2": 2.0,
+    "coords": [
+      [
+        [-5.196152422706632, 3.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.7490196078431373, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.0,
+    "radius2": 2.0,
+    "coords": [
+      [
+        [-6.0, 0.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.6666666666666666, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.0,
+    "radius2": 2.0,
+    "coords": [
+      [
+        [-5.196152422706632, -3.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.5843137254901961, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.0,
+    "radius2": 2.0,
+    "coords": [
+      [
+        [-3.0, -5.196152422706632]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.5019607843137255, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.0,
+    "radius2": 2.0,
+    "coords": [
+      [
+        [0.0, -6.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.41568627450980394, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.0,
+    "radius2": 2.0,
+    "coords": [
+      [
+        [3.0, -5.196152422706632]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.3333333333333333, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.0,
+    "radius2": 2.0,
+    "coords": [
+      [
+        [5.196152422706632, -3.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.25098039215686274, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 2.0,
+    "radius2": 2.0,
+    "coords": [
+      [
+        [6.0, 0.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.3333333333333333, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.6666666666666667,
+    "radius2": 1.6666666666666667,
+    "coords": [
+      [
+        [4.330127018922193, 2.5]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.25098039215686274, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.6666666666666667,
+    "radius2": 1.6666666666666667,
+    "coords": [
+      [
+        [2.5, 4.330127018922193]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.16862745098039217, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.6666666666666667,
+    "radius2": 1.6666666666666667,
+    "coords": [
+      [
+        [0.0, 5.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.08235294117647059, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.6666666666666667,
+    "radius2": 1.6666666666666667,
+    "coords": [
+      [
+        [-2.5, 4.330127018922193]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.6666666666666667,
+    "radius2": 1.6666666666666667,
+    "coords": [
+      [
+        [-4.330127018922193, 2.5]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.08235294117647059]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.6666666666666667,
+    "radius2": 1.6666666666666667,
+    "coords": [
+      [
+        [-5.0, 0.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.16470588235294117]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.6666666666666667,
+    "radius2": 1.6666666666666667,
+    "coords": [
+      [
+        [-4.330127018922193, -2.5]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.25098039215686274]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.6666666666666667,
+    "radius2": 1.6666666666666667,
+    "coords": [
+      [
+        [-2.5, -4.330127018922193]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.3333333333333333]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.6666666666666667,
+    "radius2": 1.6666666666666667,
+    "coords": [
+      [
+        [0.0, -5.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.41568627450980394]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.6666666666666667,
+    "radius2": 1.6666666666666667,
+    "coords": [
+      [
+        [2.5, -4.330127018922193]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.5019607843137255]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.6666666666666667,
+    "radius2": 1.6666666666666667,
+    "coords": [
+      [
+        [4.330127018922193, -2.5]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.5843137254901961]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.6666666666666667,
+    "radius2": 1.6666666666666667,
+    "coords": [
+      [
+        [5.0, 0.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.5019607843137255]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.3333333333333333,
+    "radius2": 1.3333333333333333,
+    "coords": [
+      [
+        [3.4641016151377544, 2.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.5843137254901961]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.3333333333333333,
+    "radius2": 1.3333333333333333,
+    "coords": [
+      [
+        [2.0, 3.4641016151377544]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.6666666666666666]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.3333333333333333,
+    "radius2": 1.3333333333333333,
+    "coords": [
+      [
+        [0.0, 4.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.7490196078431373]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.3333333333333333,
+    "radius2": 1.3333333333333333,
+    "coords": [
+      [
+        [-2.0, 3.4641016151377544]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.8313725490196079]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.3333333333333333,
+    "radius2": 1.3333333333333333,
+    "coords": [
+      [
+        [-3.4641016151377544, 2.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 0.9176470588235294]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.3333333333333333,
+    "radius2": 1.3333333333333333,
+    "coords": [
+      [
+        [-4.0, 0.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 1.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.3333333333333333,
+    "radius2": 1.3333333333333333,
+    "coords": [
+      [
+        [-3.4641016151377544, -2.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.9176470588235294, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.3333333333333333,
+    "radius2": 1.3333333333333333,
+    "coords": [
+      [
+        [-2.0, -3.4641016151377544]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.8313725490196079, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.3333333333333333,
+    "radius2": 1.3333333333333333,
+    "coords": [
+      [
+        [0.0, -4.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.7490196078431373, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.3333333333333333,
+    "radius2": 1.3333333333333333,
+    "coords": [
+      [
+        [2.0, -3.4641016151377544]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.6666666666666666, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.3333333333333333,
+    "radius2": 1.3333333333333333,
+    "coords": [
+      [
+        [3.4641016151377544, -2.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.5843137254901961, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.3333333333333333,
+    "radius2": 1.3333333333333333,
+    "coords": [
+      [
+        [4.0, 0.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.6666666666666666, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.0,
+    "radius2": 1.0,
+    "coords": [
+      [
+        [2.598076211353316, 1.5]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.5843137254901961, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.0,
+    "radius2": 1.0,
+    "coords": [
+      [
+        [1.5, 2.598076211353316]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.5019607843137255, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.0,
+    "radius2": 1.0,
+    "coords": [
+      [
+        [0.0, 3.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.41568627450980394, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.0,
+    "radius2": 1.0,
+    "coords": [
+      [
+        [-1.5, 2.598076211353316]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.3333333333333333, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.0,
+    "radius2": 1.0,
+    "coords": [
+      [
+        [-2.598076211353316, 1.5]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.25098039215686274, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.0,
+    "radius2": 1.0,
+    "coords": [
+      [
+        [-3.0, 0.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.16470588235294117, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.0,
+    "radius2": 1.0,
+    "coords": [
+      [
+        [-2.598076211353316, -1.5]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.08235294117647059, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.0,
+    "radius2": 1.0,
+    "coords": [
+      [
+        [-1.5, -2.598076211353316]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.0, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.0,
+    "radius2": 1.0,
+    "coords": [
+      [
+        [0.0, -3.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.08235294117647059, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.0,
+    "radius2": 1.0,
+    "coords": [
+      [
+        [1.5, -2.598076211353316]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.16470588235294117, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.0,
+    "radius2": 1.0,
+    "coords": [
+      [
+        [2.598076211353316, -1.5]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.25098039215686274, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 1.0,
+    "radius2": 1.0,
+    "coords": [
+      [
+        [3.0, 0.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.16470588235294117, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 0.6666666666666666,
+    "radius2": 0.6666666666666666,
+    "coords": [
+      [
+        [1.7320508075688772, 1.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.25098039215686274, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 0.6666666666666666,
+    "radius2": 0.6666666666666666,
+    "coords": [
+      [
+        [1.0, 1.7320508075688772]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.3333333333333333, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 0.6666666666666666,
+    "radius2": 0.6666666666666666,
+    "coords": [
+      [
+        [0.0, 2.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.41568627450980394, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 0.6666666666666666,
+    "radius2": 0.6666666666666666,
+    "coords": [
+      [
+        [-1.0, 1.7320508075688772]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.5019607843137255, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 0.6666666666666666,
+    "radius2": 0.6666666666666666,
+    "coords": [
+      [
+        [-1.7320508075688772, 1.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.5843137254901961, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 0.6666666666666666,
+    "radius2": 0.6666666666666666,
+    "coords": [
+      [
+        [-2.0, 0.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.6666666666666666, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 0.6666666666666666,
+    "radius2": 0.6666666666666666,
+    "coords": [
+      [
+        [-1.7320508075688772, -1.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.7490196078431373, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 0.6666666666666666,
+    "radius2": 0.6666666666666666,
+    "coords": [
+      [
+        [-1.0, -1.7320508075688772]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.8352941176470589, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 0.6666666666666666,
+    "radius2": 0.6666666666666666,
+    "coords": [
+      [
+        [0.0, -2.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [0.9176470588235294, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 0.6666666666666666,
+    "radius2": 0.6666666666666666,
+    "coords": [
+      [
+        [1.0, -1.7320508075688772]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.0, 1.0]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 0.6666666666666666,
+    "radius2": 0.6666666666666666,
+    "coords": [
+      [
+        [1.7320508075688772, -1.0]
+      ]
+    ]
+  }, {
+    "edgeForm": {
+      "color": [0.0, 0.0, 0.0],
+      "opacity": 0.5
+    }
+  }, {
+    "option": "color",
+    "value": [1.0, 0.0, 0.9176470588235294]
+  }, {
+    "option": "opacity",
+    "value": 0.6
+  }, {}, {
+    "type": "disk",
+    "radius1": 0.6666666666666666,
+    "radius2": 0.6666666666666666,
+    "coords": [
+      [
+        [2.0, 0.0]
+      ]
+    ]
+  }],
+  "extent": {
+    "xmin": -9.333333333333334,
+    "xmax": 9.333333333333334,
+    "ymin": -9.333333333333334,
+    "ymax": 9.333333333333334
+  }
+});
+
     /*
     drawGraphics2d("graphics2d", {
         elements: [
@@ -781,7 +2254,6 @@ function testRun() {
         axes: { hasaxes: false },
         aspectRatio: { symbol: "automatic" },
     });
-    */
     drawGraphics2d("graphics2d", {
         elements: [
             {
